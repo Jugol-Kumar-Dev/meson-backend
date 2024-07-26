@@ -1,0 +1,118 @@
+*, *::after, *::before {
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-app-region: no-drag;
+    user-select: none; /* supported by Chrome and Opera */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+}
+img {
+    pointer-events: none
+}
+
+
+$primary: #4d28ac !default;
+
+@import './base/bootstrap';
+@import './base/bootstrap-extended';
+@import './base/colors';
+@import './base/components';
+@import './base/core/menu/menu-types/vertical-menu.scss';
+@import './base/themes/dark-layout.scss';
+@import './base/plugins/tables/datatables';
+@import "./base/pages/app-chat";
+@import "./base/pages/app-chat-list";
+
+@import "./base/pages/app-chat";
+@import "./base/pages/app-chat-list";
+
+@import "./custom";
+
+.card{
+    background: white !important;
+}
+
+.ck.ck-dropdown .ck-button.ck-dropdown__button:not(.ck-button_with-text){
+    display: none !important;
+    pointer-events: none !important;
+}
+
+.modal-body figure img{
+    max-width: 100% !important;
+}
+
+.select-search-area label {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: normal;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.select-search-area select {
+    width: 5rem;
+    background-position: calc(100% - 3px) 11px, calc(100% - 20px) 13px, 100% 0;
+    margin: 0 0.5rem;
+    display: inline-block;
+}
+
+.select-search-area input {
+    margin-left: 0.75rem;
+    width: auto;
+    display: inline-block;
+}
+
+.ifremClass iframe{
+    width: 100% !important;
+    height: 100% !important;
+}
+#attatchedVideo iframe{
+    width: 100% !important;
+}
+#end{
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .md-overflow-x-scroll{
+        overflow-x: auto;
+    }
+}
+
+
+
+
+// sumilton editor toolbar
+//.note-toolbar .note-style{
+//    display:none !important;
+//}
+//.note-toolbar .note-font{
+//    display:none !important;
+//}
+//.note-toolbar .note-fontname{
+//    display:none !important;
+//}
+//.note-toolbar .note-color-all{
+//    display:none !important;
+//}
+//
+//.note-toolbar .note-view{
+//    display:none !important;
+//}
+//.note-toolbar .note-table{
+//    display:none !important;
+//}
+//.note-toolbar .note-para{
+//    display:none !important;
+//}
+//.note-editor .card-header{
+//    display: block !important;
+//}
+//.note-modal-content .note-modal-body .note-form-label {
+//    display: none !important;
+//}
+//.note-modal-content .note-modal-body .note-group-select-from-files {
+//    display: none !important;
+//}
