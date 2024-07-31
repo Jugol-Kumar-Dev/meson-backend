@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chapter;
+use App\Models\MoktestLink;
 use DateTime;
 use DateTimeZone;
 use App\Models\Course;
@@ -13,7 +14,9 @@ use App\Models\Zoom;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
+use Mockery\Mock;
 use Vimeo\Laravel\Facades\Vimeo;
 
 class CourseController extends Controller
@@ -30,7 +33,6 @@ class CourseController extends Controller
                 ->when(Request::input('search'), function ($query, $search) {
                     $query->where('name', 'like', "%{$search}%");
                 })
-                ->latest()
                 ->paginate(Request::input('perPage') ?? 10)
                 ->withQueryString()
                 ->through(fn($course) => [
@@ -42,8 +44,8 @@ class CourseController extends Controller
                     'status' => $course->status,
                     'price' => $course->price,
                     'active_on' => $course->active_on->format('d M Y'),
-                    'category' => $course->category?->name,
-                    'instructor' => $course->user?->name,
+                    'category' => $course->category->name,
+                    'instructor' => $course->user->name,
                     'show_url' => URL::route('courses.show', $course->id),
                     'edit_url' => URL::route('courses.edit', $course->id),
                 ]),
@@ -79,11 +81,12 @@ class CourseController extends Controller
     public function store()
     {
         Request::validate([
-//            'cover' => "required",
+            'cover' => "required",
+            'category_id' => "required",
             'name' => "required",
             'description' => "required|max:300",
             'price' => "required",
-//            'active_on' => "required",
+            'active_on' => "required",
         ]);
 
         $image_path = '';
@@ -131,11 +134,10 @@ class CourseController extends Controller
     {
         $mainMock = array();
         $cMock = array();
-        $course = Course::with(['zoomes', 'mocktests'=>fn($mock)=>$mock->latest(), 'chapters', 'chapters.videos', 'orders', 'orders.user'])->withCount('orders')->findOrFail($course->id);
-        $classMocktest = Mocktest::where('status', 1)
-            ->latest()
-            ->get();
-
+        $course = Course::with(['mocktests', 'zoomes', 'chapters', 'chapters.videos', 'orders', 'orders.user'])
+            ->withCount('orders')
+            ->findOrFail($course->id);
+        $allMocktest = Mocktest::where('status', 1)->get();
 
         $zooms = new ZoomController();
         $zoomsData = $zooms->index($is_api=true);
@@ -147,11 +149,13 @@ class CourseController extends Controller
 
         return inertia('Course/Show', [
             'course'    => $course ?? null,
-            'mocktests' => $classMocktest ?? [],
+            'mocktests' => $allMocktest ?? [],
+            'apiMocktests' => $course->mocktests ?? [],
             'lessons'   => Lesson::with('chapter')->where('course_id', $course->id)->orderBy('id', 'desc')->get() ?? [],
             'chapers'   => Chapter::all() ?? [],
             'lessonVideos' => $lessonVideos ?? [],
             'zooms'     => $zoomsData ?? [],
+
             'url'       => URL::route('courses.index'),
             'lesson_store_url' => URL::route('lessons.index'),
             "lesson_index" => URL::route('lessons.index'),
@@ -170,7 +174,7 @@ class CourseController extends Controller
 //            "mock_id" => 'integer|unique:course_mocktest,moktest_link_id,'.Request::input('mock_id'),
             "mock_id" => 'integer|unique:course_mocktest,mocktest_id,NULL,id,course_id,'.Request::input('course_id'),
         ],[
-            'mock_id.unique'=> "This Mocktst Already Exist In This Courses"
+            'mock_id.unique'=> "This Mock-test Already Exist In This Courses"
         ]);
 
         $mock = Mocktest::findOrFail(Request::input('mock_id'));
@@ -210,14 +214,6 @@ class CourseController extends Controller
 
     public function updateCourses(Request $request, $id){
 
-        Request::validate([
-//            'cover' => "required",
-            'name' => "required",
-            'description' => "required|max:300",
-            'price' => "required",
-//            'active_on' => "required",
-        ]);
-
         $course = Course::findOrFail($id);
 
         $image_path = '';
@@ -229,7 +225,15 @@ class CourseController extends Controller
                 @unlink($image_path);
             }
             $image_path = Request::file('cover')->store('image', 'public');
+        }else{
+            if (Request::input('cover') != null){
+                $old_path = explode('/', Request::input('cover'));
+                $image_path = $old_path[2]."/".$old_path[3];
+            }else{
+                $image_path = NULL;
+            }
         }
+
 
         if (Request::hasFile('files')) {
             $delete_path = public_path().'/'.$course->files;
@@ -237,6 +241,13 @@ class CourseController extends Controller
                 @unlink($delete_path);
             }
             $files_path = Request::file('files')->store('image', 'public');
+        }else{
+            if (Request::input('files') != null){
+                $old_path = explode('/', Request::input('files'));
+                $files_path = $old_path ? $old_path[2]."/".$old_path[3] : null;
+            }else{
+                $files_path = NULL;
+            }
         }
 
         $course->name = Request::input('name');
@@ -412,7 +423,6 @@ class CourseController extends Controller
     }
 
     public function deleteMockFormCourse(){
-//        return Request::all();
         $course = Course::findOrFail((int)Request::input('course_id'));
         $temp = $course->mocktests()->firstWhere('mocktest_id', Request::input('mock_id'));
         $temp->pivot->delete();

@@ -23,6 +23,11 @@ let vbPlugin = createVbPlugin({ Alert, Button, Carousel, Collapse, Dropdown, Mod
 import 'vue-select/dist/vue-select.css';
 import 'vue3-datepicker/dist/vue3-datepicker.css'
 
+import feather from "vue-feather"
+
+
+
+
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 const appUrl = import.meta.env.FRONTEND_URL || 'https://amcpaedia.com'
 window.$appurl = appUrl
@@ -42,6 +47,7 @@ createInertiaApp({
             .component("Link", Link)
             .component("Head", Head)
             .component('v-select', vSelect)
+            .component('vue-feather', feather)
             .mount(el)
 
     },

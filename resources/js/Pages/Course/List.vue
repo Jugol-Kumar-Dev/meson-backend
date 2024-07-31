@@ -52,62 +52,62 @@
                 <div class="card rounded-md">
                     <div class="card-body">
                         <div class="course-card">
-                    <div class="course-card__thumbnail">
-                        <img :src="`${course.cover}`" @error="errorImage" class="w-100 object-fit-cover" style="max-height: 200px;">
-                    </div>
-                    <div class="course-card__body">
-                        <Link :href="course.show_url" class="course-card__body-title">
-                            <h5 class="text-primary mt-2 text-capitalize">
-                                {{ course?.name?.slice(0, 45) }}...
-                            </h5>
-                        </Link>
-<!--                        <small>{{ course?.description?.slice(0, 55) }}...</small>-->
-                    </div>
-                    <div class="course-card__footer d-flex align-items-center justify-content-between">
-                        <div class="review">
-                            <strong>{{ course?.price }} {{ $page.props?.curency ?? 'BDT' }}</strong>
-                        </div>
-                        <div class="btn-group dropup dropdown-icon-wrapper">
-                            <button type="button"
-                                    class="btn dropdown-toggle dropdown-toggle-split waves-effect waves-float waves-light"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                            </button>
-                            <div class="dropdown-menu">
-                                <Link :href="course.show_url" class="dropdown-item">
-                                    <Icon title="eye"/>
-                                   <span class="ms-1">Show</span>
+                            <div class="course-card__thumbnail">
+                                <img :src="`${course.cover}`" @error="errorImage" class="w-100 object-fit-cover" style="max-height: 200px;">
+                            </div>
+                            <div class="course-card__body">
+                                <Link :href="course.show_url" class="course-card__body-title">
+                                    <h5 class="text-primary mt-2 text-capitalize">
+                                        {{ course?.name?.slice(0, 45) }}...
+                                    </h5>
                                 </Link>
-                                <Link :href="course.edit_url" class="dropdown-item">
-                                    <Icon title="pencil"/>
-                                   <span class="ms-1">Edit</span>
-                                </Link>
-                                <span class="dropdown-item"
-                                      @click="deleteItemModal(course.id)">
-                                    <Icon title="trash"/>
-                                   <span class="ms-1">Delete</span>
-                                </span>
+        <!--                        <small>{{ course?.description?.slice(0, 55) }}...</small>-->
+                            </div>
+                            <div class="course-card__footer d-flex align-items-center justify-content-between">
+                                <div class="review">
+                                    <strong>{{ course?.price }} {{ $page.props?.curency ?? 'BDT' }}</strong>
+                                </div>
+                                <div class="btn-group dropup dropdown-icon-wrapper">
+                                    <button type="button"
+                                            class="btn dropdown-toggle dropdown-toggle-split waves-effect waves-float waves-light"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <Link :href="course.show_url" class="dropdown-item">
+                                            <Icon title="eye"/>
+                                           <span class="ms-1">Show</span>
+                                        </Link>
+                                        <Link :href="course.edit_url" class="dropdown-item">
+                                            <Icon title="pencil"/>
+                                           <span class="ms-1">Edit</span>
+                                        </Link>
+                                        <span class="dropdown-item"
+                                              @click="deleteItemModal(course.id)">
+                                            <Icon title="trash"/>
+                                           <span class="ms-1">Delete</span>
+                                        </span>
+                                    </div>
+                                </div>
+        <!--                        <div class="d-flex align-items-center gap-1 mt-1">
+                                    <Link :href="course.show_url" class="text-success">
+                                        <Icon title="eye"/>
+                                        <span> Show</span>
+                                    </Link>
+                                    <span>|</span>
+                                    <Link :href="course.edit_url" type="button" class="text-primary">
+                                        <Icon title="pencil"/>
+                                        <span> Edit</span>
+                                    </Link>
+                                    <span>|</span>
+                                    <button @click="deleteItemModal(course.id)" type="button"
+                                            class="bg-white text-danger border-0">
+                                        <Icon title="trash"/>
+                                        <span> Delete</span>
+                                    </button>
+                                </div>-->
                             </div>
                         </div>
-<!--                        <div class="d-flex align-items-center gap-1 mt-1">
-                            <Link :href="course.show_url" class="text-success">
-                                <Icon title="eye"/>
-                                <span> Show</span>
-                            </Link>
-                            <span>|</span>
-                            <Link :href="course.edit_url" type="button" class="text-primary">
-                                <Icon title="pencil"/>
-                                <span> Edit</span>
-                            </Link>
-                            <span>|</span>
-                            <button @click="deleteItemModal(course.id)" type="button"
-                                    class="bg-white text-danger border-0">
-                                <Icon title="trash"/>
-                                <span> Delete</span>
-                            </button>
-                        </div>-->
-                    </div>
-                </div>
                     </div>
                 </div>
             </div>
