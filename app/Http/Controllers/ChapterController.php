@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Chapter;
 use App\Http\Requests\UpdateChapterRequest;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Request;
 
 class ChapterController extends Controller
@@ -78,23 +79,23 @@ class ChapterController extends Controller
      *
      * @param  \App\Http\Requests\UpdateChapterRequest  $request
      * @param  \App\Models\Chapter  $chapter
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, Chapter $chapter)
     {
-
         $chapter->update([
-            'chapter_title' => Request::input('chapter_title'),
-            'chapter_details' => Request::input('chapter_details'),
+            'chapter_title' => Request::input('title'),
+            'chapter_details' => Request::input('desc'),
             'status' => Request::input('status'),
         ]);
+        return back();
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Chapter  $chapter
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Chapter $chapter)
     {
