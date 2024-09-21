@@ -27,6 +27,10 @@ class Transaction extends Model
         return $this->belongsTo('App\Models\Course');
     }
 
+    public function order()
+    {
+        return $this->belongsTo('App\Models\Order');
+    }
     public function user()
     {
         return $this->belongsTo('App\Models\User');

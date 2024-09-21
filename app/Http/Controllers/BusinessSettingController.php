@@ -7,6 +7,7 @@ use App\Models\Advised;
 use App\Models\BusinessSetting;
 use App\Models\Category;
 use App\Models\Country;
+use App\Models\Course;
 use App\Models\Gallery;
 use App\Models\Page;
 use App\Models\Product;
@@ -23,61 +24,67 @@ class BusinessSettingController extends Controller
     public function index()
     {
         return inertia('Setting', [
-            'pages' => Page::query()->select('id', 'title')->get(),
-            'bSettings' =>[
-                's1Title'        => $this->get_setting('s1Title'),
-                's1Slogan'     => $this->get_setting('s1Slogan'),
+            'data' => [
+              'pages' => Page::query()->select('id', 'title')->get(),
+              'categories' => Category::query()->select(['id', 'name'])->get(),
+              'course' => Course::query()->select(['id', 'name'])->get()
+            ],
 
-                's2Title'        => $this->get_setting('s2Title'),
-                's2Slogan'     => $this->get_setting('s2Slogan'),
+            'bSettings' => [
+                'headerCats' => json_decode($this->get_setting('headerCats')),
+                'heroCats' => json_decode($this->get_setting('heroCats')),
 
-                's3Title'        => $this->get_setting('s3Title'),
-                's3Slogan'     => $this->get_setting('s3Slogan'),
+                'heroCourses' => json_decode($this->get_setting('heroCourses')),
+                'homeCourses' => json_decode($this->get_setting('homeCourses')),
+                'topForCats' => json_decode($this->get_setting('topForCats')),
 
-                's4Title'        => $this->get_setting('s4Title'),
-                's4Slogan'     => $this->get_setting('s4Slogan'),
+                'secondSecond' => json_decode($this->get_setting('secondSecond')),
 
-                'mstitle'        => $this->get_setting('mstitle'),
-                'msbody'     => $this->get_setting('msbody'),
 
-                'contactUs'     => $this->get_setting('contactUs'),
+                's3Slogan' => $this->get_setting('s3Slogan'),
 
-                'faqpagetitle'        => $this->get_setting('faqpagetitle'),
-                'faqpageslogan'     => $this->get_setting('faqpageslogan'),
+                's4Title' => $this->get_setting('s4Title'),
+                's4Slogan' => $this->get_setting('s4Slogan'),
 
-                'headerpages'     => json_decode($this->get_setting('headerpages')),
-                'footerpages'     => json_decode($this->get_setting('footerpages')),
+                'mstitle' => $this->get_setting('mstitle'),
+                'msbody' => $this->get_setting('msbody'),
 
-                'footerText'     => $this->get_setting('footerText'),
+                'contactUs' => $this->get_setting('contactUs'),
+
+                'faqpagetitle' => $this->get_setting('faqpagetitle'),
+                'faqpageslogan' => $this->get_setting('faqpageslogan'),
+
+                'headerpages' => json_decode($this->get_setting('headerpages')),
+                'footerpages' => json_decode($this->get_setting('footerpages')),
+
+                'footerText' => $this->get_setting('footerText'),
             ]
         ]);
     }
 
     public function updateSetting()
     {
-        foreach (Request::all() as $type => $value){
+        foreach (Request::all() as $type => $value) {
             $business_settings = BusinessSetting::where('type', $type)->first();
-            if($business_settings != null) {
-                if ($value != null){
-                    if ($type == 'timezone' && gettype($value) != 'array'){
+            if ($business_settings != null) {
+                if ($value != null) {
+                    if ($type == 'timezone' && gettype($value) != 'array') {
                         $value = $business_settings->value;
                     }
-                    if(gettype($value) == 'array'){
+                    if (gettype($value) == 'array') {
                         $business_settings->value = json_encode($value);
-                    }
-                    else {
+                    } else {
                         $business_settings->value = $value;
                     }
                     $business_settings->save();
                 }
-            } else{
-                if ($value != null){
+            } else {
+                if ($value != null) {
                     $business_settings = new BusinessSetting;
                     $business_settings->type = $type;
-                    if(gettype($value) == 'array'){
+                    if (gettype($value) == 'array') {
                         $business_settings->value = json_encode($value);
-                    }
-                    else {
+                    } else {
                         $business_settings->value = $value;
                     }
                     $business_settings->save();

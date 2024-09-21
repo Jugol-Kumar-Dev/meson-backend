@@ -28,7 +28,7 @@ class CategoryController extends Controller
                     'id' => $category->id,
                     'name' => $category->name,
                     'slug' => $category->slug,
-                    'photo' => $category->photo,
+                    'photo' => Storage::url($category->photo),
                     'edit_url' => URL::route('categories.edit', $category->id)
                 ]),
 

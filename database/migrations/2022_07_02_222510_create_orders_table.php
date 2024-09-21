@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('course_id')->nullable();
             $table->integer('user_id');
             $table->integer('instructor_id')->nullable();
-            $table->text('transaction_id');
+//            $table->text('transaction_id');
             $table->string('payment_method', 191);
             $table->decimal('total_amount', 8,2);
             $table->decimal('coupon_discount', 5,2)->nullable();

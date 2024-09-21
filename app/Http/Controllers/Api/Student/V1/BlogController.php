@@ -1,55 +1,35 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Student\V1;
 
+use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Models\Category;
 use App\Models\Comment;
-use App\Models\Course;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Inertia\Response|\Inertia\ResponseFactory
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(): \Illuminate\Http\JsonResponse
     {
-        return inertia('Blog/List', [
-            'blogs' => Blog::query()->with(['category', 'user'])
-                ->when(Request::input('search'), function ($query, $search) {
-                    $query->where('name', 'like', "%{$search}%");
-                })
-                ->where('type', '=', 'blog')
-                ->paginate(Request::input('perPage') ?? 12)
-                ->withQueryString()
-                ->through(fn($blog) => [
-                    'id' => $blog->id,
-                    'title' => Str::limit($blog->title, 50),
-                    'description' => Str::limit($blog->description, 80),
-                    'cover' => Storage::url($blog->image),
-                    'user' => $blog->user,
-                    'category' => $blog->category,
-                    'created_at' => $blog->created_at->format('F d, Y'),
-                    'viewers' => $blog->view_count,
-                    'publication_status' => $blog->publication_status,
-                    'is_featured' => $blog->is_featured,
-                    'show_url' => env('FRONTEND_URL') . '/blog/' . $blog->id,
-                    'edit_url' => URL::route('blogs.edit', $blog->id),
-                    'delete_url' => URL::route('blogs.destroy', $blog->id),
-                    'comment_url' => URL::route('blogs.show', [$blog->slug, 'is_delete' => true])
-                ]),
-            'filters' => Request::only(['search', 'perPage']),
-            'url' => URL::route('blogs.index')
-        ]);
+        $blogs = Blog::query()->with(['user:id,name', 'comments', 'comments.user:id,photo,name'])
+            ->when(Request::input('search'), function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->where('type', '=','post')
+            ->latest()
+            ->paginate(Request::input('perPage') ?? 12)
+            ->withQueryString();
+        return response()->json($blogs);
     }
 
     /**
@@ -70,58 +50,36 @@ class BlogController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return array
      */
-    public function store()
+    public function store()//: \Illuminate\Http\JsonResponse
     {
-
-
         $data = Request::validate([
-            'title' => 'required|max:250|min:5',
-            'category_id' => 'required',
-            'description' => 'nullable|max:800',
-            'content' => 'required',
-            'tags' => 'array',
-            'p_status' => 'boolean',
-            's_status' => 'boolean',
-            'cover' => 'required|mimes:jpg,jpeg,png,gif,svg'
+            'description' => 'nullable|max:300',
+            'image' => 'nullable'
         ]);
 
         $image_path = null;
-        if (Request::hasFile('cover')) {
-            $image_path = Request::file('cover')->store('image', 'public');
+        if (Request::hasFile('image')) {
+            $image_path = Request::file('image')->store('image', 'public');
         }
 
         $data['user_id'] = Auth::id();
-        $data['tags'] = json_encode(Request::input('tags'));
-        $data['publication_status'] = Request::input('p_status');
-        $data['is_featured'] = Request::input('s_status');
+//        $data['status'] = Request::input('p_status');
         $data['image'] = $image_path;
-        $data['type'] = 'blog';
-
-        Blog::create($data);
-
-        if (!empty(Request::input('tags'))) {
-            foreach (Request::input('tags') as $item) {
-                Tag::updateOrCreate([
-                    'name' => $item
-                ]);
-            }
-        }
-
-        return Redirect::route('blogs.index');
-
+        $blog = Blog::create($data);
+        return response()->json($blog);
     }
 
     /**
      * Display the specified resource.
      *
      * @param \App\Models\Blog $blog
-     * @return \Inertia\Response|\Inertia\ResponseFactory
+     * @return Blog
      */
     public function show(Blog $blog)
     {
-        return inertia('Course/Show');
+        return $blog;
     }
 
     /**
@@ -188,8 +146,6 @@ class BlogController extends Controller
         $data['publication_status'] = Request::input('p_status');
         $data['is_featured'] = Request::input('s_status');
         $data['image'] = $image_path;
-        $data['type'] = 'blog';
-
         $blog->update($data);
 
         foreach (Request::input('tags') as $item) {
@@ -207,15 +163,22 @@ class BlogController extends Controller
      * @param \App\Models\Blog $blog
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Blog $blog)
+    public function destroy($id)
     {
+        $blog = Blog::findOrFail($id);
         $blog->delete();
-        return back()->with(['msg' => "Comment is deleted..."]);
+        return response()->json(['msg' => "Comment is deleted..."]);
     }
 
-    public function allComments($slug)
+
+    public function saveComment(): \Illuminate\Http\JsonResponse
     {
-        //
+        Comment::create([
+            'blog_id' => Request::input('postId'),
+            'user_id' => Auth::id(),
+            'message' => Request::input('comment')
+        ]);
+        return response()->json('Coment Created');
     }
 
 

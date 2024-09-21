@@ -20,9 +20,14 @@ class Category extends Model
         'slug',
     ];
 
+    protected $appends = ['photo_url'];
     /**
      * Get the options for generating the slug.
      */
+    public function getPhotoUrlAttribute(): ?string
+    {
+        return $this->photo ? Storage::url($this->photo) : NULL;
+    }
     public function getSlugOptions() : SlugOptions
     {
         return SlugOptions::create()
@@ -45,13 +50,6 @@ class Category extends Model
     //     });
     // }
 
-    protected function photo(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => Storage::url($value),
-//            set: fn ($value) => is_file($value) ? $value->store('image', 'public') : $value,
-        );
-    }
 
     public function sub_categories()
     {

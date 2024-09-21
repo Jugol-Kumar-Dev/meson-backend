@@ -27,7 +27,11 @@ return new class extends Migration
             $table->enum('status', ['pending', 'inactive', 'active', 'cancel'])->default('pending');
             $table->integer('access_time')->nullable();
             $table->enum('access_type', ['Year', 'Month', 'Days'])->nullable();
-            $table->date('active_on');
+            $table->date('active_on')->nullable();
+            $table->json('instractors')->nullable();
+            $table->json('inclues')->nullable();
+            $table->json('features')->nullable();
+            $table->json('faqs')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

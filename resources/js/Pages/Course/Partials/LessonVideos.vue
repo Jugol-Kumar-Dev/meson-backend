@@ -42,7 +42,9 @@
                                                 <div>
                                                     <div class="d-flex gap-2">
                                                         <p class="fw-bold text-black text-capitalize m-0 p-0">{{ item?.name }}</p>
-                                                        <span :class="item.status ? 'badge badge-light-success' : 'badge badge-light-warning'">{{ item.status ? 'Active' : 'Pending' }}</span>
+                                                        <span style="height:max-content" :class="item.status ? 'badge badge-light-success' : 'badge badge-light-warning'">
+                                                            {{ item.status ? 'Active' : 'Pending' }}
+                                                        </span>
                                                     </div>
                                                     <small>{{ item?.description?.slice(0, 50) }}</small>
                                                 </div>
@@ -231,10 +233,9 @@ let createForm = useForm({
     content: null,
 });
 
-const addLesson = (lessonId) =>{
-    createForm.chapter_id = lessonId
+const addLesson = (chapterId) =>{
+    createForm.chapter_id = chapterId
     createForm.id = null
-    createForm.chapter_id = null
     createForm.description = null
     createForm.video = null
     createForm.status = false

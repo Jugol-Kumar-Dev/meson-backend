@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\LiveClassCOntroller;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\BusinessSettingController;
 use App\Http\Controllers\PayPalPaymentController;
@@ -116,6 +117,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::resource('transactions', TransactionController::class);
         Route::resource('subscriptions', SubscriptionController::class);
+        Route::resource('live-class', LiveClassController::class);
         Route::resource('meetings', ZoomController::class);
 
         Route::get('students', [UserController::class, 'student'])->name('student.list');
@@ -135,6 +137,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('instructors', [UserController::class, 'instructor'])->name('instructor.list');
         Route::get('admins', [UserController::class, 'admin'])->name('admin.list');
+        Route::post('admins', [UserController::class, 'store'])->name('admin.store');
 
         Route::resource('coupons', CouponController::class);
         Route::post('coupon/activation/{id}', [CouponController::class, 'activation'])->name('coupon_activation');

@@ -13,6 +13,8 @@ import PDFViewer from "@cloudpdf/viewer";
 import {router, useForm} from "@inertiajs/vue3";
 import Layout from "@/Shared/Layout.vue";
 import LessonVideos from "@/Pages/Course/Partials/LessonVideos.vue";
+import Mocktests from "@/Pages/Course/Partials/Mocktests.vue";
+import Meetings from "@/Pages/Course/Partials/Meetings.vue";
 
 let format = (time, formate) => {
     return moment(time).format(formate);
@@ -34,7 +36,7 @@ let props = defineProps({
     chapers: [] | null,
     lessonVideos: [] | null,
 
-    zooms: [] | Object | null,
+    liveClass: [] | Object | null,
 
     add_course_mitting: null,
     main_url: null,
@@ -260,7 +262,7 @@ const editChapterItem = (url, id) => {
                                     <div class="d-flex align-items-center gap-1">
                                         <h5 class="fw-bolder">Price: <span class="text-primary">{{
                                                 course?.price
-                                            }}</span> AUD</h5>
+                                            }}</span> ৳</h5>
                                     </div>
                                 </div>
                             </div>
@@ -791,73 +793,16 @@ const editChapterItem = (url, id) => {
             </div>
 
             <div class="row">
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="w-100 d-flex justify-content-between align-items-center pb-2">
-                                <p class="fw-bolder fs-5 p-0">Zoom Meetings</p>
-                                <button class="btn btn-icon btn-circle btn-sm btn-primary">
-                                    <vue-feather type="plus" size="15"/>
-                                </button>
-                            </div>
-
-                            <div class="border-top py-2">
-                                <ul class="ps-0 course-list-group d-flex flex-column gap-2">
-                                    <li class="border-bottom pb-2 course-list-item" v-for="i in  15">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <div class="d-flex flex-column gap-1 align-items-start">
-                                                <div>
-                                                    <p class="m-0 p-0 fs-4 fw-bolder">Math-303 Vactor Class-2 </p>
-                                                    <p class="m-0 p-0">12-08-2024 02:00 PM</p>
-                                                </div>
-                                                <span class="badge badge-light-primary">
-                                                    Active
-                                                </span>
-                                            </div>
-                                            <button class="btn btn-icon btn-circle btn-sm btn-danger">
-                                                <vue-feather type="trash" size="15"/>
-                                            </button>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="w-100 d-flex justify-content-between align-items-center pb-2">
-                                <p class="fw-bolder p-0 fs-5">Mock-Tests</p>
-                                <button class="btn btn-icon btn-circle btn-sm btn-primary">
-                                    <vue-feather type="plus" size="15"/>
-                                </button>
-                            </div>
-
-                            <div class="border-top py-2">
-                                <ul class="ps-0 course-list-group d-flex flex-column gap-2">
-                                    <li class="border-bottom pb-2 course-list-item" v-for="mocktest in  apiMocktests">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <div class="d-flex flex-column gap-1 align-items-start">
-                                                <div>
-                                                    <p class="m-0 p-0 fs-4 fw-bolder">{{ mocktest.name }}</p>
-                                                </div>
-                                                <div>
-                                                    <span v-if="mocktest.status === '1'"
-                                                          class="badge badge-light-primary">Active</span>
-                                                    <span v-else class="badge badge-light-warning">Draft</span>
-                                                </div>
-                                            </div>
-                                            <button class="btn btn-icon btn-circle btn-sm btn-danger">
-                                                <vue-feather type="trash" size="15"/>
-                                            </button>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <Meetings :liveClass="liveClass"
+                          :courseId="course?.id"
+                          :errors="errors"/>
+                <Mocktests :apiMocktests="apiMocktests"
+                           :course="course"
+                           :mocktests="mocktests"
+                           :saveMocktest="save_mocktest"
+                           :errors="errors"
+                           :deleteMockUrl="mock_delete_url"
+                />
                 <LessonVideos :course="course"
                               :chatperUrl="props.chapter_url"
                               :lessonIndex="props.lesson_index"
@@ -866,54 +811,6 @@ const editChapterItem = (url, id) => {
                 />
             </div>
         </div>
-
-        <Modal id="addZoom" title="Add Course Meeting" v-vb-is:modal>
-            <form @submit.prevent="addCourseMitting">
-                <div class="modal-body">
-                    <label>Zooms:</label><br>
-                    <div class="mb-1">
-                        <!--                        <v-select v-model="addZoom.zoomid" label="topic"
-                                                          placeholder="Select Zoom For This Meeting"
-                                                          :reduce="zoom => zoom.id"
-                                                          :options="props.zooms">
-                                                </v-select>-->
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button :disabled="processing" type="submit"
-                            class="btn btn-primary waves-effect waves-float waves-light">Submit
-                    </button>
-                    <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal"
-                            aria-label="Close">Cancel
-                    </button>
-                </div>
-            </form>
-        </Modal>
-        <Modal id="addMocktest" title="Add Mock-test In Course" v-vb-is:modal>
-            <form @submit.prevent="saveMocktest">
-                <div class="modal-body">
-                    <label>Mocktests: <small>(One Mocktest One Time)</small></label><br>
-
-                    <div class="mb-1">
-                        <v-select v-model="updateForm.mock_id"
-                                  label="name"
-                                  placeholder="Select Mocktest For Assign"
-                                  :options="props.mocktests"
-                                  :reduce="mock => mock.id"
-                        ></v-select>
-                        <small class="text-danger" v-if="props.errors.mock_id">{{ errors.mock_id }}</small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button :disabled="processing" type="submit"
-                            class="btn btn-primary waves-effect waves-float waves-light">Submit
-                    </button>
-                    <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal"
-                            aria-label="Close">Cancel
-                    </button>
-                </div>
-            </form>
-        </Modal>
 
         <Modal id="showVideo" size="lg" title="Show Course Video" v-vb-is:modal>
             <div class="modal-body">

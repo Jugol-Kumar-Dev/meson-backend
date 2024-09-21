@@ -69,11 +69,11 @@ class Mocktest extends Model
         return $this->belongsToMany(Course::class,'course_mocktest')->withTimestamps();
     }
 
-    public function questions(): BelongsToMany
+    public function questions() //: BelongsToMany
     {
 //        return $this->belongsToMany(Mocktest::class,'course_mocktest')->withPivot('status')->withTimestamps();
 
-        return $this->belongsToMany(Question::class, 'mocktest_questions', 'mocktest_id', 'qustion_id')->withPivot('user_id')->withTimestamps();
+        return $this->belongsToMany(Question::class, 'mocktest_questions', 'mocktest_id', 'question_id')->withPivot('user_id')->withTimestamps();
     }
 
 

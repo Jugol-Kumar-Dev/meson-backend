@@ -54,11 +54,11 @@
                         <tbody>
                         <tr v-for="category in categories.data" :key="category.id">
                             <td>
-                                <div class="avatar  me-1">
+                                <div class="me-1">
                                     <img :src="category.photo" alt="{{ category.name }}" height="32" width="32">
                                 </div>
                             </td>
-                            <td>{{ category.name }}</td>
+                            <td>{{ category?.name }}</td>
                             <td>{{ category.slug }}</td>
                             <td>
                                 <div class="demo-inline-spacing">

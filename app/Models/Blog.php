@@ -20,6 +20,7 @@ class Blog extends Model
     use HasFactory, HasSlug;
 
     protected $guarded = ['id'];
+    protected $appends = ['image_url'];
 
     public function getSlugOptions(): SlugOptions
     {
@@ -27,11 +28,9 @@ class Blog extends Model
             ->generateSlugsFrom('title')
             ->saveSlugsTo('slug');
     }
-    protected function image(): Attribute
+    protected function getImageUrlAttribute(): ?string
     {
-        return Attribute::make(
-            get: fn ($value) => $value ? Storage::url($value) : '/images/avatar.png',
-        );
+        return $this->image ? Storage::url($this->image) : null;
     }
 
     public function category(){

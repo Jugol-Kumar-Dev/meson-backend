@@ -104,14 +104,6 @@
                     </ul>
                 </li>
 
-<!--
-                <li class=" nav-item">
-                    <Link preserve-scroll class="d-flex align-items-center" href="/panel/transactions">
-                        <Icon title="dollar-sign" width="24" height="24" />
-                        <span class="menu-title text-truncate">Transactions</span>
-                    </Link>
-                </li>
--->
 
                 <li v-if="$page.props.auth.user.role === 'admin'" class="nav-item has-sub" :class="{'open' : clickMenu === 'Authentication'}" @click="toggleSubMenu('Authentication')">
                     <a preserve-scroll class="d-flex align-items-center" href="javascript:void(0)">
@@ -131,7 +123,26 @@
                                 <span class="menu-item text-truncate">Admin</span>
                             </Link>
                         </li>
+                        <li>
+                            <Link preserve-scroll class="d-flex align-items-center" href="/panel/instructors">
+                                <Icon title="circle" width="24" height="24" />
+                                <span class="menu-item text-truncate">Instructor</span>
+                            </Link>
+                        </li>
                     </ul>
+                </li>
+
+                <li class=" nav-item">
+                    <Link preserve-scroll class="d-flex align-items-center" href="/panel/blogs">
+                        <Icon title="dollar-sign" width="24" height="24" />
+                        <span class="menu-title text-truncate">Blogs</span>
+                    </Link>
+                </li>
+                <li class="nav-item" v-if="$page.props.auth.user.role === 'admin'">
+                    <Link preserve-scroll class="d-flex align-items-center" href="/panel/settings">
+                        <vue-feather type="settings"/>
+                        <span class="menu-title text-truncate">Settings</span>
+                    </Link>
                 </li>
             </ul>
         </div>

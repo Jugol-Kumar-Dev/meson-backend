@@ -14,116 +14,145 @@
         </div>
 
 
-
-
-
-
-
         <div class="row">
             <div class="col-md-3 d-flex flex-column gap-2">
-                <div class="btn btn-outline-primary" :class="{ 'bg-primary text-white fw-bolder': currentTab === 'details' }"
+                <div class="btn btn-outline-primary"
+                     :class="{ 'bg-primary text-white fw-bolder': currentTab === 'homesettings' }"
+                     @click="setActiveTab('homesettings')">
+                    Home Setting
+                </div>
+                <div class="btn btn-outline-primary"
+                     :class="{ 'bg-primary text-white fw-bolder': currentTab === 'details' }"
                      @click="setActiveTab('details')">
-                    Home Page Setting
+                    Home Course Setting
                 </div>
-
-                <div class="btn btn-outline-primary" :class="{ 'bg-primary text-white fw-bolder': currentTab === 'homeMessage' }"
+                <div class="btn btn-outline-primary"
+                     :class="{ 'bg-primary text-white fw-bolder': currentTab === 'homeMessage' }"
                      @click="setActiveTab('homeMessage')">
-                        Home Message
+                    Second Home Section
                 </div>
 
-                <div class="btn btn-outline-primary" :class="{ 'bg-primary text-white fw-bolder': currentTab === 'contactUs' }"
+<!--                <div class="btn btn-outline-primary"
+                     :class="{ 'bg-primary text-white fw-bolder': currentTab === 'contactUs' }"
                      @click="setActiveTab('contactUs')">
-                        Contact Us
+                    Contact Us
                 </div>
-
-                <div class="btn btn-outline-primary" :class="{ 'bg-primary text-white fw-bolder': currentTab === 'headerPages' }"
+                <div class="btn btn-outline-primary"
+                     :class="{ 'bg-primary text-white fw-bolder': currentTab === 'headerPages' }"
                      @click="setActiveTab('headerPages')">
                     Header Pages
                 </div>
-
-                <div class="btn btn-outline-primary" :class="{ 'bg-primary text-white fw-bolder': currentTab === 'footerPages' }"
+                <div class="btn btn-outline-primary"
+                     :class="{ 'bg-primary text-white fw-bolder': currentTab === 'footerPages' }"
                      @click="setActiveTab('footerPages')">
                     Footer Pages
-                </div>
+                </div>-->
 
             </div>
             <div class="col-md-9">
+                <div class="card" v-if="currentTab === 'homesettings'">
+                    <div class="card-header d-flex gap-2 mb-1">
+                        <h3 class="card-title m-0">Home Settings</h3>
+                    </div>
+                    <div class="card-body d-flex flex-column gap-2">
+                        <div>
+                            <label>Header Categories</label>
+                            <v-select v-model="createForm.headerCats"
+                                      label="name"
+                                      multiple="true"
+                                      :options="data?.categories" :reduce="item => item.id"></v-select>
+                        </div>
+                        <div>
+                            <label>Hero Categories</label>
+                            <v-select v-model="createForm.heroCats"
+                                      label="name"
+                                      multiple="true"
+                                      :options="data?.categories" :reduce="item => item.id"></v-select>
+                        </div>
+
+                        <div>
+                            <label>Hero Courses</label>
+                            <v-select v-model="createForm.heroCourses"
+                                      label="name"
+                                      multiple="true"
+                                      :options="data?.course" :reduce="item => item.id"></v-select>
+                        </div>
+                        <div>
+                            <label>Top 4 Category</label>
+                            <v-select v-model="createForm.topForCats"
+                                      label="name"
+                                      multiple="true"
+                                      :options="data?.categories" :reduce="item => item.id"></v-select>
+                        </div>
+
+
+                        <button class="btn btn-success mt-5" @click="updateSettings">Update Settings</button>
+                    </div>
+                </div>
+
+
                 <div class="card" v-if="currentTab === 'details'">
                     <div class="card-header d-flex gap-2">
                         <h3 class="card-title m-0">Home page setting</h3>
                     </div>
                     <div class="card-body">
-                        <div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="card">
-                                        <div class="card-body border-primary rounded-2">
-                                            <h3 class="my-1">Section 1</h3>
-                                            <Text v-model="createForm.s1Title"  label="Section Title"/>
-                                            <Text v-model="createForm.s1Slogan"  label="Section Slogan"/>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="card">
-                                        <div class="card-body border-primary rounded-2">
-                                            <h3 class="my-1">Section 2</h3>
-                                            <Text v-model="createForm.s2Title"  label="Section Title"/>
-                                            <Text v-model="createForm.s2Slogan"  label="Section Slogan"/>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="card">
-                                        <div class="card-body border-primary rounded-2">
-                                            <h3 class="my-1">Section 2</h3>
-                                            <Text v-model="createForm.s3Title"  label="Section Title"/>
-                                            <Text v-model="createForm.s3Slogan"  label="Section Slogan"/>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="card">
-                                        <div class="card-body border-primary rounded-2">
-                                            <h3 class="my-1">Promo Title</h3>
-                                            <Text v-model="createForm.s4Title"  label="Section Title"/>
-                                            <Text v-model="createForm.s4Slogan"  label="Section Slogan"/>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="card">
-                                        <div class="card-body border-primary rounded-2">
-                                            <h3 class="my-1">FAQ Page</h3>
-                                            <Text v-model="createForm.faqpagetitle"  label="Page Title"/>
-                                            <Text v-model="createForm.faqpageslogan"  label="Page Slogan"/>
-                                        </div>
-                                    </div>
+                        <div class="row">
+                            <div class="col-md-6 border p-1" v-for="(item, index) in createForm.homeCourses">
+                                <Text class="w-100 mb-0" v-model="createForm.homeCourses[index].section"
+                                      placeholder="Section title"/>
+                                <v-select v-model="createForm.homeCourses[index].courses"
+                                          label="name"
+                                          multiple="true"
+                                          :options="data.course" :reduce="course => course.id"></v-select>
+                                <div>
+                                    <button type="button" class="btn mt-2 btn-sm btn-primary"
+                                            v-if="index === 0" @click="addFaq">
+                                        +
+                                    </button>
+                                    <button type="button" class="btn mt-2 btn-sm btn-secondary" v-else
+                                            @click="removeFaq(index)">
+                                        -
+                                    </button>
                                 </div>
                             </div>
-                            <button class="btn btn-success" @click="updateSettings">Update Settings</button>
                         </div>
+                        <button class="btn btn-success mt-3" @click="updateSettings">Update Settings</button>
                     </div>
                 </div>
                 <div class="card" v-if="currentTab === 'homeMessage'">
                     <div class="card-header d-flex gap-2">
-                        <h3 class="card-title m-0">Message</h3>
+                        <h3 class="card-title m-0">Secon Home Section</h3>
                     </div>
                     <div class="card-body">
-                        <Text v-model="createForm.mstitle"  label="Message Title"/>
-                        <Textarea v-model="createForm.msbody"  label="Message Body"/>
+                        <Text v-model="createForm.secondSecond.sectionTitle" label="Section Title"/>
 
-                        <button class="btn btn-success" @click="updateSettings">Update Settings</button>
+                        <label>Section Category</label>
+                        <v-select v-model="createForm.secondSecond.categories"
+                                  class="mb-1"
+                                  label="name"
+                                  multiple="true"
+                                  :options="data?.categories" :reduce="page => page.id"></v-select>
+
+                        <label>Section Course</label>
+                        <v-select v-model="createForm.secondSecond.courses"
+                                  label="name"
+                                  multiple="true"
+                                  :options="data?.course"
+                                  :reduce="page => page.id">
+                        </v-select>
+
+                        <button class="btn btn-success mt-2" @click="updateSettings">Update Settings</button>
                     </div>
                 </div>
+
+
                 <div class="card" v-if="currentTab === 'contactUs'">
                     <div class="card-header d-flex gap-2 mb-1">
                         <h3 class="card-title m-0">Contact Us</h3>
                     </div>
                     <div class="card-body">
-                        <Textarea v-model="createForm.contactUs" style="height:500px;" placeholder="Contact us page content...."/>
+                        <Textarea v-model="createForm.contactUs" style="height:500px;"
+                                  placeholder="Contact us page content...."/>
                         <button class="btn btn-success" @click="updateSettings">Update Settings</button>
                     </div>
                 </div>
@@ -149,7 +178,8 @@
                                   label="title"
                                   multiple="true"
                                   :options="pages" :reduce="page => page.id"></v-select>
-                        <Textarea v-model="createForm.footerText" style="height:500px;" placeholder="Footer About Content...."/>
+                        <Textarea v-model="createForm.footerText" style="height:500px;"
+                                  placeholder="Footer About Content...."/>
                         <button class="btn btn-success mt-5" @click="updateSettings">Update Settings</button>
                     </div>
                 </div>
@@ -157,9 +187,7 @@
         </div>
 
 
-
     </Layout>
-
 
 
 </template>
@@ -173,38 +201,41 @@ import {onMounted, ref} from "vue";
 import Textarea from "@/Components/form/Textarea.vue";
 
 const props = defineProps({
-    pages:Array,
-    bSettings:Object,
+    pages: Array,
+    data:Array,
+    bSettings: Object,
 })
 
-const currentTab = ref('details')
+const currentTab = ref('homesettings')
 const setActiveTab = (event) => currentTab.value = event
 
 let createForm = useForm({
-    s1Title  : props.bSettings.s1Title ?? '',
-    s1Slogan : props.bSettings.s1Slogan ?? '',
+    headerCats: props.bSettings.headerCats ?? '',
+    heroCats: props.bSettings.heroCats ?? '',
 
-    s2Title  : props.bSettings.s2Title ?? '',
-    s2Slogan : props.bSettings.s2Slogan ?? '',
+    homeCourses: props.bSettings.homeCourses ?? '',
+    heroCourses: props.bSettings.heroCourses ?? '',
+    topForCats: props.bSettings.topForCats ?? '',
 
-    s3Title  : props.bSettings.s3Title ?? '',
-    s3Slogan : props.bSettings.s3Slogan ?? '',
+    secondSecond:  props.bSettings.secondSecond ?? {},
 
-    s4Title  : props.bSettings.s4Title ?? '',
-    s4Slogan : props.bSettings.s4Slogan ?? '',
 
-    mstitle  : props.bSettings.mstitle ?? '',
-    msbody : props.bSettings.msbody ?? '',
 
-    contactUs : props.bSettings.contactUs ?? '',
+    s4Title: props.bSettings.s4Title ?? '',
+    s4Slogan: props.bSettings.s4Slogan ?? '',
 
-    faqpagetitle  : props.bSettings.faqpagetitle ?? '',
-    faqpageslogan : props.bSettings.faqpageslogan ?? '',
+    mstitle: props.bSettings.mstitle ?? '',
+    msbody: props.bSettings.msbody ?? '',
 
-    headerpages : props.bSettings.headerpages ?? '',
-    footerpages : props.bSettings.footerpages ?? '',
+    contactUs: props.bSettings.contactUs ?? '',
 
-    footerText   : props.bSettings.footerText ?? '',
+    faqpagetitle: props.bSettings.faqpagetitle ?? '',
+    faqpageslogan: props.bSettings.faqpageslogan ?? '',
+
+    headerpages: props.bSettings.headerpages ?? '',
+    footerpages: props.bSettings.footerpages ?? '',
+
+    footerText: props.bSettings.footerText ?? '',
 
 
     // logo_fabs   : props.bSettings.logo_fabs ?? '',
@@ -221,10 +252,19 @@ let createForm = useForm({
 
 
 })
+const addFaq = () => {
+    createForm.homeCourses.push(
+        {
+            section: null,
+            courses: []
+        }
+    )
+}
+const removeFaq = (index) => createForm.homeCourses.splice(index, 1);
 
-const updateSettings = () =>{
-    createForm.post('/settings-update', {
-        onSuccess:()=>{
+const updateSettings = () => {
+    createForm.post('/panel/settings-update', {
+        onSuccess: () => {
             alert("Setting Updated....")
         }
     })

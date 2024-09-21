@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chapter;
+use App\Models\LiveClass;
 use App\Models\MoktestLink;
+use App\Models\User;
 use DateTime;
 use DateTimeZone;
 use App\Models\Course;
@@ -39,7 +41,7 @@ class CourseController extends Controller
                     'id' => $course->id,
                     'name' => $course->name,
                     'description' => $course->description,
-                    'cover' => $course->cover,
+                    'cover' => Storage::url($course->cover),
                     'video' => $course->video,
                     'status' => $course->status,
                     'price' => $course->price,
@@ -63,7 +65,9 @@ class CourseController extends Controller
     public function create()
     {
         return inertia('Course/Create', [
-
+            'instractors' => User::query()->select(['id','name'])
+                ->where('role', 'instructor')
+            ->get(),
             'categories' => Category::select('id', 'name')->get(),
             'url' => URL::route('courses.index')
             // 'can' => [
@@ -86,7 +90,7 @@ class CourseController extends Controller
             'name' => "required",
             'description' => "required|max:300",
             'price' => "required",
-            'active_on' => "required",
+//            'active_on' => "required",
         ]);
 
         $image_path = '';
@@ -109,8 +113,14 @@ class CourseController extends Controller
         $course->files = $files_path;
         $course->price = Request::input('price');
         $course->user_id = Auth::user()->id;
+
+        $course->instractors = json_encode(Request::input('instractors'));
+        $course->inclues = json_encode(Request::input('inclues'));
+        $course->features = json_encode(Request::input('features'));
+        $course->faqs = json_encode(Request::input('faqs'));
+
         $course->category_id = Request::input('category_id');
-        $course->active_on = date("Y-m-d", strtotime(Request::input('active_on')));
+        $course->active_on = !Request::input('active_on') ? now()->format("Y-m-d") : date("Y-m-d", strtotime(Request::input('active_on')));
         $course->access_time = Request::input('access_time');
         $course->access_type = Request::input('access_type') != "" ? Request::input('access_type') : NULL;
         $course->save();
@@ -134,18 +144,11 @@ class CourseController extends Controller
     {
         $mainMock = array();
         $cMock = array();
-        $course = Course::with(['mocktests', 'zoomes', 'chapters', 'chapters.videos', 'orders', 'orders.user'])
+        $course = Course::with(['mocktests', 'chapters', 'chapters.videos', 'orders', 'orders.user'])
             ->withCount('orders')
             ->findOrFail($course->id);
+        $course->cover = Storage::url($course->cover);
         $allMocktest = Mocktest::where('status', 1)->get();
-
-        $zooms = new ZoomController();
-        $zoomsData = $zooms->index($is_api=true);
-
-        $lessonVideos = $course->lessons()->orderBy('id', 'desc')->doesntHave('chapter')->get();
-
-
-
 
         return inertia('Course/Show', [
             'course'    => $course ?? null,
@@ -154,7 +157,7 @@ class CourseController extends Controller
             'lessons'   => Lesson::with('chapter')->where('course_id', $course->id)->orderBy('id', 'desc')->get() ?? [],
             'chapers'   => Chapter::all() ?? [],
             'lessonVideos' => $lessonVideos ?? [],
-            'zooms'     => $zoomsData ?? [],
+            'liveClass'     => LiveClass::query()->where('course_id', $course->id)->get() ?? [],
 
             'url'       => URL::route('courses.index'),
             'lesson_store_url' => URL::route('lessons.index'),

@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('course_id');
+            $table->foreignId('order_id')->constrained('orders');
+            $table->foreignId('course_id')->constrained('courses');
             $table->unsignedBigInteger('user_id');
             $table->string('method');
             $table->string('trx');

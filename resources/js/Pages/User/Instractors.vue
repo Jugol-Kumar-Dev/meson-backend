@@ -5,14 +5,14 @@
             <div class="content-header-left col-md-9 col-12 mb-2">
                 <div class="row breadcrumbs-top">
                     <div class="col-12">
-                        <h2 class="content-header-title float-start mb-0">Admin List</h2>
+                        <h2 class="content-header-title float-start mb-0">Instructors List</h2>
                     </div>
                 </div>
             </div>
             <div class="content-header-right text-md-end col-md-3 col-12 d-md-block d-none">
                 <div class="mb-1 breadcrumb-right">
                     <button class="dt-button add-new btn btn-primary" tabindex="0" type="button" data-bs-toggle="modal"
-                        data-bs-target="#createNewAdmin"><span>Add New Admin</span></button>
+                        data-bs-target="#createNewAdmin"><span>Add New Instructor</span></button>
                 </div>
             </div>
         </div>
@@ -51,7 +51,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="admin in admins.data" :key="admin.id">
+                        <tr v-for="admin in instructors.data" :key="admin.id">
                             <td>
                                 <div class="d-flex justify-content-left align-items-center">
                                     <div class="avatar-wrapper">
@@ -69,12 +69,12 @@
                                 </div>
                             </td>
                             <td>{{ admin.phone }}</td>
-                            <td>{{ admin.active_on }}</td>
+                            <td>{{ admin.created_at }}</td>
                             <td>
                                 <div class="demo-inline-spacing">
-                                    <button type="button" class="btn btn-icon btn-icon rounded-circle btn-warning waves-effect waves-float waves-light">
-                                        <Icon title="eye" />
-                                    </button>
+<!--                                    <button type="button" class="btn btn-icon btn-icon rounded-circle btn-warning waves-effect waves-float waves-light">-->
+<!--                                        <Icon title="eye" />-->
+<!--                                    </button>-->
                                     <button @click="deleteItemModal(admin.id)" type="button" class="btn btn-icon btn-icon rounded-circle btn-warning waves-effect waves-float waves-light btn-danger">
                                         <Icon title="trash" />
                                     </button>
@@ -83,7 +83,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <Pagination :links="admins.links" :from="admins.from" :to="admins.to" :total="admins.total" />
+                <Pagination :links="instructors.links" :from="instructors.from" :to="instructors.to" :total="instructors.total" />
             </div>
             <!-- Modal to add new Admin starts-->
             <Modal id="createNewAdmin" title="Create New User here" v-vb-is:modal>
@@ -122,7 +122,7 @@ import {router, useForm} from "@inertiajs/vue3";
 import Layout from "@/Shared/Layout.vue";
 import Select from "@/Components/form/Select.vue";
 let props = defineProps({
-    admins: Object,
+    instructors: Object,
     filters: Object,
     errors:Object,
     url: String,
@@ -133,7 +133,7 @@ let createForm = useForm({
     email: '',
     phone: '',
     designation: '',
-    role: 'admin',
+    role: 'instructor',
     photo: '',
     password: '',
 });

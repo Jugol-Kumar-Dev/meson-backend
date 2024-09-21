@@ -46,7 +46,7 @@ class StudentController extends Controller
                     'active_on' => $user->created_at->format('d M Y'),
                 ]),
 
-            'filters' => Request::only(['search','perPage']),
+            'filters' => Request::only(['search', 'perPage']),
             'url' => URL::route('students.index'),
             // 'can' => [
             //     'createUser' => Auth::user()->can('create', User::class)
@@ -67,7 +67,7 @@ class StudentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -78,7 +78,7 @@ class StudentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -90,7 +90,7 @@ class StudentController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -101,8 +101,8 @@ class StudentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -113,7 +113,7 @@ class StudentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -142,7 +142,7 @@ class StudentController extends Controller
                     'created' => $order->created_at->format('d m Y'),
                 ]),
 
-            'filters' => Request::only(['search','perPage']),
+            'filters' => Request::only(['search', 'perPage']),
             'url' => URL::route('purchase_history')
         ]);
     }
@@ -170,14 +170,14 @@ class StudentController extends Controller
                     'created' => $order->created_at->format('d m Y'),
                 ]),
 
-            'filters' => Request::only(['search','perPage']),
+            'filters' => Request::only(['search', 'perPage']),
             'url' => URL::route('course_list')
         ]);
     }
 
     public function course_details(Course $course, $slug)
     {
-        $course = Course::with(['mocktests'=>fn($mock)=>$mock->latest()])
+        $course = Course::with(['mocktests' => fn($mock) => $mock->latest()])
             ->where('slug', $slug)
             ->first();
 
@@ -193,6 +193,7 @@ class StudentController extends Controller
             'user' => Auth::user(),
         ]);
     }
+
     public function student_profile_update()
     {
         $user = Auth::user();
@@ -214,12 +215,14 @@ class StudentController extends Controller
         return Redirect::back();
     }
 
-    public function mocktest_list($onlyData=false)
+    public function mocktest_list($onlyData = false)
     {
         $user_id = Auth::user();
         $tests = Mocktest::where('show_student', 1)->where('status', 1)->latest()->get();
 
 
+        $user_id = Auth::user();
+        $tests = Mocktest::where('show_student', 1)->where('status', 1)->latest()->get();
 
 
         $allTests = array();
@@ -232,15 +235,52 @@ class StudentController extends Controller
         }
 
 
+        $courses = Order::query()
+            ->with('course')
+            ->where('user_id', Auth::id())
+            ->where('is_show', 1)
+            ->pluck('course_id');
+
+        $courses = Course::query()->with('mocktests:id,name,status,exam_type,duration,end_time,start_time,total_q')
+            ->whereIn('id', $courses)->get();
+
+        $allTests = [];
+        foreach ($courses as $course) {
+            $mocks = $course->mocktests->where('status', 1);
+            foreach ($mocks as $mock) {
+                $allTests[] = [
+                    'mock' => $mock,
+                ];
+            }
+        }
+
+        return $allTests;
+
+//
+//        if ($onlyData){
+//            return $allTests;
+//        }
+//
+//
+//        $allTests = array();
+//        foreach ($tests as $test) {
+////            $temp = $test->users()->firstWhere('user_id', $user_id->id);
+//            $allTests[] = [
+//                'mock' => $test,
+////                'user' => $temp ?? ''
+//            ];
+//        }
+//
+//
 
 
         $courses = Order::query()->with('course')->where('user_id', Auth::id())->where('is_show', 1)->pluck('course_id');
         $courses = Course::query()->with('mocktests:id,name,status,exam_type,duration,end_time,start_time,total_q')->whereIn('id', $courses)->get();
 
-        $allTests=[];
-        foreach ($courses as $course){
+        $allTests = [];
+        foreach ($courses as $course) {
             $mocks = $course->mocktests->where('status', 1);
-            foreach ($mocks  as $mock){
+            foreach ($mocks as $mock) {
                 $allTests[] = [
                     'mock' => $mock,
                 ];
@@ -248,13 +288,8 @@ class StudentController extends Controller
         }
 
 
-        if ($onlyData){
-            return $allTests;
-        }
+        return $allTests;
 
-        return inertia('Student/MocktestList', [
-            'mocktests' => $allTests
-        ]);
 
     }
 
@@ -268,36 +303,35 @@ class StudentController extends Controller
     }
 
 
-
     public function mocktest_enroll($id)
     {
 
         $mocktest = Mocktest::findOrFail($id);
 
-        if($mocktest->exam_type == 'main'){
+        if ($mocktest->exam_type == 'main') {
             $givenId = MocktestUser::query()
                 ->where('mocktest_id', $id)
                 ->where('user_id', Auth::id())
                 ->first();
-            if($givenId){
+            if ($givenId) {
                 return back()->withErrors("You have already attended the live exam. Please check practice exams for further practice.");
             }
         }
 
         $qq = array();
         $givenStatus = true;
-        if($mocktest){
-            if($mocktest->exam_type == 'main'){
-                if($mocktest->start_time <= now() && $mocktest->end_time >= now()){
+        if ($mocktest) {
+            if ($mocktest->exam_type == 'main') {
+                if ($mocktest->start_time <= now() && $mocktest->end_time >= now()) {
                     $qq = Question::query()->whereIn('id', json_decode($mocktest->questions))->get();
-                }else{
+                } else {
                     $givenStatus = false;
                 }
 
-            }else{
+            } else {
                 $qq = Question::query()->whereIn('id', json_decode($mocktest->questions))->get();
             }
-        }else{
+        } else {
             $givenStatus = false;
         }
 
@@ -321,7 +355,7 @@ class StudentController extends Controller
             'user_id' => Auth::id(),
         ])->first();
 
-        if(!empty($givenId) && $mocktest->exam_type == 'main'){
+        if (!empty($givenId) && $mocktest->exam_type == 'main') {
             return $this->mocktestResults($mocktest->id);
         }
 
@@ -340,17 +374,17 @@ class StudentController extends Controller
         foreach ($ansQuestions as $answer) {
             $temp = Question::find($answer['id']);
             if ($temp && isset($answer['ans'])) {
-                if($temp->answer === $answer['ans']){
+                if ($temp->answer === $answer['ans']) {
                     $total_correct++;
                     $mark += $temp->mark;
-                }else{
-                    if(!empty($mocktest->minus_mark)){
+                } else {
+                    if (!empty($mocktest->minus_mark)) {
                         $total_incarrect++;
                         $minusMark += (($temp->mark * $mocktest->minus_mark) / 100);
                     }
                 }
             }
-            $attatch []= [
+            $attatch [] = [
                 'mocktest_user_id' => $givenId->id,
                 'user_id' => Auth::id(),
                 'mocktest_id' => $mocktest_id,
@@ -360,7 +394,7 @@ class StudentController extends Controller
         }
 
         $givenId->mark = $mark - $minusMark;
-        $givenId->minus_mark =  $minusMark;
+        $givenId->minus_mark = $minusMark;
         $givenId->total_correct = $total_correct;
         $givenId->total_incaorrect = $total_incarrect;
         $givenId->update();
@@ -387,7 +421,7 @@ class StudentController extends Controller
             ->where('user_id', Auth::id())
             ->first();
 
-        if($mocktestUser){
+        if ($mocktestUser) {
             return $this->showResult($mocktestUser->id);
         }
         return back()->withErrors("First, take the exam. Afterwards, view your results.");
@@ -408,21 +442,21 @@ class StudentController extends Controller
 //        ]);
     }
 
-    public function showResult($givenId, $onlyData=false)
+    public function showResult($givenId, $onlyData = false)
     {
         $result = MocktestUser::query()->with(['mocktest', 'givenAnswers', 'givenAnswers.question'])->findOrFail($givenId);
 
         $allUsers = MocktestUser::where('mocktest_id', $result->mocktest_id)->orderByDesc('mark')->select('id')->get();
         $position = $allUsers->search(function ($user) use ($result) {
-            return $user->id === $result->id;
-        }) + 1;
+                return $user->id === $result->id;
+            }) + 1;
 
         $result->position = $position;
         $result->partisipants = $allUsers->count();
 
-        if($onlyData) return $result->load('user:id,name,email,phone');
+        if ($onlyData) return $result->load('user:id,name,email,phone');
 
-        return inertia('Student/MockSingleResult',[
+        return inertia('Student/MockSingleResult', [
             'result' => $result
         ]);
     }

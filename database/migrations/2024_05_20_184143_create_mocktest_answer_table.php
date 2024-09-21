@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('mocktest_answer', function (Blueprint $table) {
             $table->id();
             $table->foreignId('mocktest_id')->nullable()->constrained('mocktests')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('mocktest_user_id')->nullable()->constrained('mocktest_user')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained('users');
             $table->foreignId('question_id')->nullable()->constrained('questions');
-            $table->string('user_answer');
+            $table->string('user_answer')->nullable();
             $table->timestamps();
         });
     }

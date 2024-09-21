@@ -74,11 +74,18 @@ class User extends Authenticatable
         'dob' => 'datetime:d/m/Y',
     ];
 
+    protected $appends = ['photo_url'];
+
     /**
      * The attributes that should be bcrypted.
      *
      * @var array<string, string>
      */
+
+    public function getPhotoUrlAttribute(): ?string
+    {
+        return $this->photo ? Storage::url($this->photo) : null;
+    }
 
     protected function password(): Attribute
     {

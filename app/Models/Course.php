@@ -33,6 +33,14 @@ class Course extends Model
         'active_on',
         'status',
     ];
+    protected $guarded = ['id'];
+
+    protected $appends = ['cover_url'];
+
+    public function getCoverUrlAttribute(): ?string
+    {
+        return $this->cover ? Storage::url($this->cover) : NULL;
+    }
 
     protected $casts = [
         'active_on' => 'datetime:d/m/Y',
@@ -73,27 +81,15 @@ class Course extends Model
         return $this->hasMany('App\Models\Order');
     }
 
-    public function zoomes(){
-        return $this->hasMany(Zoom::class, 'course_id');
+    public function liveClasses(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(LiveClass::class, 'course_id');
     }
 
     public function lessons(){
         return $this->hasMany('App\Models\Lesson');
     }
 
-    protected function cover(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => $value ? Storage::url($value) : '/image/image.png',
-        );
-    }
-
-    protected function files(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => $value ? Storage::url($value) : null,
-        );
-    }
 
     public function mocktests(){
         return $this->belongsToMany(Mocktest::class,'course_mocktest')->withPivot('status')->withTimestamps();

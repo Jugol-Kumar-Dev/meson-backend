@@ -58,22 +58,14 @@ class UserController extends Controller
     }
     public function instructor()
     {
-        return inertia('User/Instructor', [
+        return inertia('User/Instractors', [
             'instructors' => User::query()
                 ->when(Request::input('search'), function ($query, $search) {
                     $query->where('name', 'like', "%{$search}%");
                 })
                 ->where('role', 'instructor')
                 ->paginate(Request::input('perPage') ?? 10)
-                ->withQueryString()
-                ->through(fn($instructor) => [
-                    'id' => $instructor->id,
-                    'name' => $instructor->name,
-                    'phone' => $instructor->phone,
-                    'email' => $instructor->email,
-                    'photo' => $instructor->photo,
-                    'active_on' => $instructor->created_at->format('d M Y'),
-                ]),
+                ->withQueryString(),
 
             'filters' => Request::only(['search','perPage'])
             // 'can' => [
@@ -300,15 +292,21 @@ class UserController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+
+    public function store()
     {
-        //
+
+        $data = Request::validate([
+            'name' => 'required',
+            'phone' => 'required|unique:users,phone',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
+            'role' => 'required'
+        ]);
+
+        User::create($data);
+
+        return back();
     }
 
     /**
