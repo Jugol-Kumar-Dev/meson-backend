@@ -10,7 +10,7 @@
                             <div class="d-flex justify-content-start">
                                 <span class="b-avatar badge-light-danger rounded">
                                     <img class="rounded me-2" style="width: 140px;height: 140px;"
-                                         :src="user.photo" alt="avatar">
+                                         :src="user.photo_url" alt="avatar">
                                 </span>
                                 <div class="d-flex flex-column ml-1">
                                     <div class="mb-1">
@@ -20,8 +20,8 @@
 
                                     <div class="d-flex justify-content-between">
                                         <button class="btn-gradient-info btn me-2" @click="editUserItem(edit_url)">Edit</button>
-                                        <button class="btn-gradient-danger btn">Delete</button>
-                                        <button @click="showCertificate" class="btn btn-gradient-success ms-2">Show</button>
+                                        <button class="btn-gradient-danger btn" @click="deleteItemModal(user?.id)">Delete</button>
+<!--                                        <button @click="showCertificate" class="btn btn-gradient-success ms-2">Show</button>-->
                                     </div>
                                 </div>
                             </div>
@@ -172,8 +172,8 @@
                         <div class="card">
                             <div class="card-datatable table-responsive pt-0">
                                 <div class="float-end header-actions mx-0 row mt-75 mb-75">
-                                    <button class="btn btn-sm btn-primary" tabindex="0" type="button" data-bs-toggle="modal"
-                                            data-bs-target="#assignNewCourse">Assign New Course</button>
+<!--                                    <button class="btn btn-sm btn-primary" tabindex="0" type="button" data-bs-toggle="modal"-->
+<!--                                            data-bs-target="#assignNewCourse">Assign New Course</button>-->
                                 </div>
                                 <table class="user-list-table table">
                                     <thead class="table-light">
@@ -640,7 +640,7 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                router.delete(`/student/course-delete/${id}`, {
+                router.delete(`/panel/student/delete/${id}`, {
                     preserveState: true, replace: true, onSuccess: page => {
                         Swal.fire(
                             'Deleted!',
@@ -654,6 +654,7 @@
                             'Something went wrong!',
                             'error'
                         )
+                        // router.replace('/panel/students')
                     }
                 })
             }
@@ -662,7 +663,7 @@
 
 
     let avticationStatus = (value, status) => {
-        router.post(`/student/course-stratus/${value}?show_status=${status}`, {
+        router.post(`/panel/student/course-stratus/${value}?show_status=${status}`, {
             onSuccess: () => {
                 Swal.fire(
                     'Deactivated!',

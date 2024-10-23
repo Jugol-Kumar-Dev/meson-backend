@@ -17,16 +17,16 @@
                         <div class="card bg-white">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <Text v-model="createForm.name" label="Exam Title" placeholder="Exam title" />
                                     </div>
-                                    <div class="col-md-6">
+<!--                                    <div class="col-md-6">
                                         <label>Select Exam Type</label>
                                         <select v-model="examType" class="form-control">
                                             <option value="main">Live Exam</option>
                                             <option value="practice">Practice Exam</option>
                                         </select>
-                                    </div>
+                                    </div>-->
 
 
                                     <div class="row m-0 p-0">

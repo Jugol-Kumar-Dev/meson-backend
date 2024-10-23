@@ -29,7 +29,7 @@ import feather from "vue-feather"
 
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
-const appUrl = import.meta.env.FRONTEND_URL || 'https://amcpaedia.com'
+const appUrl = import.meta.env.FRONTEND_URL;
 window.$appurl = appUrl
 
 createInertiaApp({

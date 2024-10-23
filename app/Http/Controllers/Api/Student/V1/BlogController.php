@@ -25,6 +25,21 @@ class BlogController extends Controller
             ->when(Request::input('search'), function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%");
             })
+            ->where('status', true)
+            ->where('type', '=','post')
+            ->latest()
+            ->paginate(Request::input('perPage') ?? 12)
+            ->withQueryString();
+        return response()->json($blogs);
+    }
+    public function myPosts(): \Illuminate\Http\JsonResponse
+    {
+        $blogs = Blog::query()->with(['user:id,name', 'comments', 'comments.user:id,photo,name'])
+            ->when(Request::input('search'), function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->where('user_id', Auth::id())
+            ->where('status', true)
             ->where('type', '=','post')
             ->latest()
             ->paginate(Request::input('perPage') ?? 12)
@@ -32,6 +47,20 @@ class BlogController extends Controller
         return response()->json($blogs);
     }
 
+    public function pendingPosts(): \Illuminate\Http\JsonResponse
+    {
+        $blogs = Blog::query()->with(['user:id,name', 'comments', 'comments.user:id,photo,name'])
+            ->when(Request::input('search'), function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->where('user_id', Auth::id())
+            ->where('status', false)
+            ->where('type', '=','post')
+            ->latest()
+            ->paginate(Request::input('perPage') ?? 12)
+            ->withQueryString();
+        return response()->json($blogs);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -50,7 +79,7 @@ class BlogController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @return array
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store()//: \Illuminate\Http\JsonResponse
     {
@@ -65,7 +94,7 @@ class BlogController extends Controller
         }
 
         $data['user_id'] = Auth::id();
-//        $data['status'] = Request::input('p_status');
+        $data['status'] = false;
         $data['image'] = $image_path;
         $blog = Blog::create($data);
         return response()->json($blog);

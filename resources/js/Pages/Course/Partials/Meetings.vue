@@ -6,6 +6,8 @@
     import {useForm} from "@inertiajs/vue3";
     import Image from "@/Components/form/Image.vue";
     import moment from "moment";
+    import {useAction} from "@/Composable/useAction.js";
+    const {deleteItem} = useAction();
 
     const props = defineProps({
         courseId:Number,
@@ -59,11 +61,11 @@
                                         <p class="m-0 p-0 fs-4 fw-bolder">{{ item?.title }}</p>
                                         <p class="m-0 p-0">{{ moment(item?.start_time)?.format('lll')}}</p>
                                     </div>
-                                    <span class="badge badge-light-primary">
-                                        Active
-                                    </span>
+<!--                                    <span class="badge badge-light-primary">-->
+<!--                                        Active-->
+<!--                                    </span>-->
                                 </div>
-                                <button class="btn btn-icon btn-circle btn-sm btn-danger">
+                                <button @click="deleteItem('/panel/live-class', item?.id)" class="btn btn-icon btn-circle btn-sm btn-danger">
                                     <vue-feather type="trash" size="15"/>
                                 </button>
                             </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Request;
 
@@ -15,6 +16,8 @@ class TransactionController extends Controller
      */
     public function index()
     {
+
+
         return inertia('Transaction', [
             'transactions' => Transaction::query()
                 ->when(Request::input('search'), function ($query, $search) {
@@ -31,8 +34,8 @@ class TransactionController extends Controller
                     'amount' => $transaction->amount,
                     'date' => $transaction->created_at->format('d M Y'),
                 ]),
-
-            'filters' => Request::only(['search','perPage']),
+            'total' => Transaction::sum('amount'),
+            'filters' => Request::only(['search', 'perPage']),
             'url' => URL::route('transactions.index')
         ]);
     }
@@ -50,7 +53,7 @@ class TransactionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -61,18 +64,23 @@ class TransactionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Transaction  $transaction
-     * @return \Illuminate\Http\Response
+     * @param \App\Models\Transaction $transaction
+     * @return \Inertia\Response|\Inertia\ResponseFactory
      */
-    public function show(Transaction $transaction)
+    public function show($trx): \Inertia\Response|\Inertia\ResponseFactory
     {
-        //
+        $trx = Transaction::query()
+            ->with('order','order.course','user', 'order.orderDetails')
+            ->where('trx', $trx)->first();
+        return inertia('ShowTransaction',[
+            'trx' => $trx,
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Transaction  $transaction
+     * @param \App\Models\Transaction $transaction
      * @return \Illuminate\Http\Response
      */
     public function edit(Transaction $transaction)
@@ -83,8 +91,8 @@ class TransactionController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Transaction  $transaction
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Transaction $transaction
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Transaction $transaction)
@@ -95,7 +103,7 @@ class TransactionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Transaction  $transaction
+     * @param \App\Models\Transaction $transaction
      * @return \Illuminate\Http\Response
      */
     public function destroy(Transaction $transaction)

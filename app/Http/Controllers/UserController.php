@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use function Money\sum;
 
@@ -38,7 +39,7 @@ class UserController extends Controller
                     'name' => $student->name,
                     'phone' => $student->phone,
                     'email' => $student->email,
-                    'photo' => $student->photo,
+                    'photo_url' => Storage::url($student->photo),
                     'certificate' => $student->certificate,
                     'is_active' => $student->is_active,
                     'active_on' => $student->created_at->format('d M Y'),
@@ -67,7 +68,8 @@ class UserController extends Controller
                 ->paginate(Request::input('perPage') ?? 10)
                 ->withQueryString(),
 
-            'filters' => Request::only(['search','perPage'])
+            'filters' => Request::only(['search','perPage']),
+            'url' => URL::route('instructor.list')
             // 'can' => [
             //     'createUser' => Auth::user()->can('create', User::class)
             // ]
@@ -152,7 +154,7 @@ class UserController extends Controller
 
     public function showStudent($id)
     {
-        $courses =  Course::where('status', 'active')->withCount("zoomes")->get();
+        $courses =  Course::where('status', 'active')->withCount("liveClasses")->get();
         $zooms = 0;
         foreach ($courses as $c){
             $zooms = $zooms + $c->zoomes_count;
@@ -347,13 +349,17 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {
-        $student = User::findOrFail($id);
-        $student->delete();
-        return back();
+        try{
+            $student = User::findOrFail($id);
+            $student->delete();
+            return back();
+        }catch (\Exception $exception){
+            return back()->withErrors($exception->getMessage());
+        }
 
     }
 

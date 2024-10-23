@@ -27,18 +27,29 @@ class BusinessSettingController extends Controller
             'data' => [
               'pages' => Page::query()->select('id', 'title')->get(),
               'categories' => Category::query()->select(['id', 'name'])->get(),
-              'course' => Course::query()->select(['id', 'name'])->get()
+              'course' => Course::query()->select(['id', 'name'])
+                  ->where('status', 'active')
+                  ->get()
             ],
 
             'bSettings' => [
+                'heroTitle' => $this->get_setting('heroTitle'),
+                'heroSlogan' => $this->get_setting('heroSlogan'),
+                'heroCourseTitle' => $this->get_setting('heroCourseTitle'),
+                'heroCourseSlogan' => $this->get_setting('heroCourseSlogan'),
+
+                'profile' => json_decode($this->get_setting('profile')),
                 'headerCats' => json_decode($this->get_setting('headerCats')),
                 'heroCats' => json_decode($this->get_setting('heroCats')),
+
+                'counter' => json_decode($this->get_setting('counter')),
 
                 'heroCourses' => json_decode($this->get_setting('heroCourses')),
                 'homeCourses' => json_decode($this->get_setting('homeCourses')),
                 'topForCats' => json_decode($this->get_setting('topForCats')),
 
                 'secondSecond' => json_decode($this->get_setting('secondSecond')),
+                'notice' => json_decode($this->get_setting('notice')),
 
 
                 's3Slogan' => $this->get_setting('s3Slogan'),

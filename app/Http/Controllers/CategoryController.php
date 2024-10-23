@@ -133,16 +133,10 @@ class CategoryController extends Controller
         if (Request::hasFile('photo')){
             $image_path = public_path().'/'.$category->photo;
             @unlink($image_path);
-            $image_path = Request::file('photo')->store('image', 'public');
-        }else{
-            $old_path = explode('/', Request::input('photo'));
-            $image_path = $old_path[2]."/".$old_path[3];
+            $category->photo = Request::file('photo')->store('image', 'public');
         }
-
-        $category->update([
-            'name' => Request::input('name'),
-            'photo' => $image_path,
-        ]);
+        $category->name = Request::input('name');
+        $category->update();
 
         return Redirect::route('categories.index');
 

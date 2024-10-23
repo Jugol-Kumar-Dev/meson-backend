@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Mocktest;
 use App\Models\MocktestAnswer;
 use App\Models\MocktestUser;
+use App\Models\Question;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -120,23 +121,28 @@ class MocktestController extends Controller
             'exam_token' => $examToken,
             'exam_type' => 'live'
         ];
-        $item = MocktestUser::create($arr);
 
+        $item = MocktestUser::query()
+            ->where('mocktest_id', $arr['mocktest_id'])
+            ->where('user_id', $arr['user_id'])
+            ->where('exam_type', $arr['exam_type'])
+            ->first();
+        if ($item) {
+            DB::table('mocktest_answer')
+                ->where('mocktest_user_id', $item->id)
+                ->where('mocktest_id', $mock->id)
+                ->where('user_id', Auth::id())->delete();
+            $item->delete();
+        }
+
+        $item = MocktestUser::create($arr);
         Session::push('mock_token', $examToken);
 
-
-        $mock->questions()->detach();
         $ids = json_decode($mock->questions);
-
+//        return $mock;
         if ($mock && count($ids)) {
-            $mockQuestions = [];
             $mockAns = [];
             foreach ($ids as $question) {
-                $mockQuestions[] = [
-                    'mocktest_id' => $mock->id,
-                    'question_id' => $question,
-                    'user_id' => Auth::id()
-                ];
                 $mockAns[] = [
                     'mocktest_id' => $mock->id,
                     'mocktest_user_id' => $item->id,
@@ -144,7 +150,6 @@ class MocktestController extends Controller
                     'user_id' => Auth::id()
                 ];
             }
-            $mock->questions()->attach($mockQuestions);
             MocktestAnswer::query()->insert($mockAns);
         }
 
@@ -161,33 +166,44 @@ class MocktestController extends Controller
         }
     }
 
-    public function mockQuestions($id): array
+    public function mockQuestions($id)
     {
         $mock = Mocktest::query()->with('users')
-            ->select(['id', 'duration', 'total_q'])->findOrFail($id); //->wherePassword($request->input('password'))
+            ->select(['id', 'duration', 'total_q', 'minus_mark'])->findOrFail($id); //->wherePassword($request->input('password'))
         $mock->isShowQustions = true;
 
-
+/*
         if (\request()->has('mockId') && request()->has('token') && $mock) {
-            $mockUser = DB::table('mocktest_user')
-                ->where('exam_token', \request()->input('token'))
-                ->pluck('id')
+            $mockUser = MocktestUser::query()   //DB::table('mocktest_user')
+            ->where('exam_token', \request()->input('token'))
                 ->first();
 
+            $temp = Question::query()->find(request()->input('qId'));
+            if ($temp) {
+                if ($temp->answer === Str::lower(request()->input('qAns'))) {
+                    $mockUser->mark += $temp->mark;
+                    $mockUser->total_correct = $mockUser->total_correct + 1;
+                } else {
+                    $mockUser->total_incaorrect = (int) $mockUser->total_incaorrect + 1;
+                    if (!empty($mock->minus_mark) && request()->input('qAns')) {
+                        $mockUser->minus_mark =  $mockUser->minus_mark + (($temp->mark * $mock->minus_mark) / 100);
+                    }
+                }
+                $mockUser->save();
+            }
+
             DB::table('mocktest_answer')
-            ->where('mocktest_id', request()->input('mockId'))
-            ->where('user_id', Auth::id())
-            ->where('mocktest_user_id', $mockUser)
-            ->where('question_id', request()->input('qId'))
-            ->update([
-                'user_answer' => \request()->input('qAns'),
-            ]);
-        }
+                ->where('mocktest_id', request()->input('mockId'))
+                ->where('user_id', Auth::id())
+                ->where('mocktest_user_id', $mockUser->id)
+                ->where('question_id', request()->input('qId'))
+                ->update([
+                    'user_answer' => \request()->input('qAns'),
+                ]);
+        }*/
 
         return [
-            'data' => $mock->questions()->where('user_id', Auth::id())
-                ->select('questions.id', 'questions.title')
-                ->paginate(1),
+            'data' => $mock->questions()->where('user_id', Auth::id())->select('questions.id', 'questions.title')->paginate(12),
             'mock' => $mock,
             'answer_details' => request()->has('mockId') ? \request()->all() : 'no have answer details'
         ];
@@ -196,22 +212,40 @@ class MocktestController extends Controller
 
     public function finishMocktest(Request $request): \Illuminate\Http\JsonResponse
     {
-        $mock = Mocktest::query()->with('users')->findOrFail($request->input('mockId'));
+        $mock = Mocktest::query()->with('users')
+            ->select(['id', 'duration', 'total_q', 'minus_mark'])->findOrFail($request->input('mockId')); //->wherePassword($request->input('password'))
+        $mock->isShowQustions = true;
+
+
         if (\request()->has('mockId') && request()->has('token') && $mock) {
-            $mockUser = DB::table('mocktest_user')
-                ->where('exam_token', \request()->input('token'))
-                ->pluck('id')
+            $mockUser = MocktestUser::query()   //DB::table('mocktest_user')
+            ->where('exam_token', \request()->input('token'))
                 ->first();
+
+            $temp = Question::query()->find(request()->input('qId'));
+            if ($temp) {
+                if ($temp->answer === Str::lower(request()->input('qAns'))) {
+                    $mockUser->mark += $temp->mark;
+                    $mockUser->total_correct += 1;
+                } else {
+                    $mockUser->total_incaorrect = (int) $mockUser->total_incaorrect + 1;
+                    if (!empty($mock->minus_mark) && request()->input('qAns')) {
+                        $mockUser->minus_mark =  $mockUser->minus_mark + (($temp->mark * $mock->minus_mark) / 100);
+                    }
+                }
+                $mockUser->save();
+            }
 
             DB::table('mocktest_answer')
                 ->where('mocktest_id', request()->input('mockId'))
                 ->where('user_id', Auth::id())
-                ->where('mocktest_user_id', $mockUser)
+                ->where('mocktest_user_id', $mockUser->id)
                 ->where('question_id', request()->input('qId'))
                 ->update([
                     'user_answer' => \request()->input('qAns'),
                 ]);
         }
+
         DB::table('mocktest_questions')
             ->where('mocktest_id', $mock->id)
             ->where('user_id', Auth::id())

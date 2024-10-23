@@ -12,7 +12,7 @@
             </div>
             <div class="content-header-right text-md-end col-md-3 col-12 d-md-block d-none">
                 <div class="mb-1 breadcrumb-right">
-                    <Link href="/pages/create" class="dt-button add-new btn btn-primary"><span>Add New Page</span></Link>
+                    <Link href="/panel/pages/create" class="dt-button add-new btn btn-primary"><span>Add New Page</span></Link>
                 </div>
             </div>
         </div>
@@ -65,7 +65,7 @@
                                     </button>
 
                                     <div class="dropdown-menu">
-                                        <Link :href="`/pages/${page.slug}?page=edit`" class="dropdown-item">
+                                        <Link :href="`/panel/pages/${page.slug}?page=edit`" class="dropdown-item">
                                             <Icon title="pencil"/>
                                            <span class="ms-1">Edit</span>
                                         </Link>

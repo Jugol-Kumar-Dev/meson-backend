@@ -34,4 +34,6 @@ class MocktestUser extends Model
         return $this->hasMany(GivenMocktestAnswer::class);
     }
 
+
+
 }

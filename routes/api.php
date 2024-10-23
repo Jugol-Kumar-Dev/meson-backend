@@ -22,6 +22,7 @@ use \App\Http\Controllers\Api\Student\V1\MocktestController as StudentMocktestCo
 use \App\Http\Controllers\Api\Student\V1\PracticeMocktestController as StudentPracticeMocktestController;
 use \App\Http\Controllers\Api\Student\V1\LiveClassController as StudentLiveClassController;
 use \App\Http\Controllers\Api\Student\V1\BlogController as StudentBlogController;
+use \App\Http\Controllers\Api\Student\V1\DashboardController as StudentDashboardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,13 +32,23 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('frontend')->group(function (){
     Route::controller(HomeController::class)->group(function (){
         // home page settings data
+        Route::get('/header-categories', 'heraderCategories');
         Route::get('/hero-categories', 'heroCategories');
         Route::get('/hero-courses', 'heroCourses');
         Route::get('/top-for-categories', 'topForCats');
         Route::get('/home-page-courses', 'homeCoures');
         Route::get('/home-second-section', 'secondHomeSection');
-        Route::get('/home-blogs','homeBlogs');
 
+        Route::get('/home-blogs','homeBlogs');
+        Route::get('/single-blog/{id}','singleBlogs');
+
+        Route::get('/course-categories', 'courseCateories');
+        Route::get('/category-courses', 'categoryCourses');
+
+        Route::get('/student-reviews', 'studentReviews');
+
+        Route::get('/pages', 'footerPages');
+        Route::get('/pages/{slug}', 'singlePage');
         Route::get('/get-settings', 'getSettings');
     });
 
@@ -48,23 +59,37 @@ Route::prefix('frontend')->group(function (){
 
 
 
+// student email verification routes
+Route::get('/verified-email-notification', [LoginController::class, 'verifiedEmail'])->name('api.verifiedEmail');
+Route::get('/forgot-password-notification', [LoginController::class, 'checkForgotPassword'])->name('api.forgotPasswordEmail');
+
+
+
 // student guest rotues
 Route::prefix('student')->group(function (){
+    //  registration and login
    Route::post('/login', [LoginController::class, 'login']);
    Route::post('/register', [LoginController::class, 'signup']);
+
+   // forgot password
+    Route::post('/forgot-password', [LoginController::class, 'sendForgotPasswordReqs']);
+    Route::post('/save-new-password', [LoginController::class, 'saveNewChangedPassword'])->name('api.saveNewChangedPassword');
 });
 
+
 // student auth routes
-Route::middleware('auth:sanctum')->prefix('student')->group(function (){
+Route::middleware(['auth:sanctum', 'is_verified', 'is_student'])->prefix('student')->group(function (){
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+
+    // dashboard data
+    Route::get('/dashboard', [StudentDashboardController::class, 'todayData']);
 
     // course related routes
     Route::get('/get-my-courses', [StudentCourseController::class, 'myCourses']);
     Route::get('/get-course-lessons/{id}', [StudentCourseController::class, 'courseContent']);
     Route::get('/get-course-details/{id}', [StudentCourseController::class, 'courseDetails']);
-
 
     // live exam related routes
     Route::get('/get-live-exams', [StudentMocktestController::class, 'myMocktests']);
@@ -82,19 +107,36 @@ Route::middleware('auth:sanctum')->prefix('student')->group(function (){
     Route::get('/show-results/{id}', [StudentPracticeMocktestController::class, 'showResults']);
     Route::get('/show-result-details/{id}', [StudentPracticeMocktestController::class, 'showResultDetails']);
 
+    // apply coupon before order
+    Route::post('/apply-coupon', [OrderController::class, 'applyCoupon']);
+
     // create order and payment
     Route::post('/create-order', [OrderController::class, 'store']);
     Route::get('/get-confirm-order/{id}', [OrderController::class, 'getConfirmOrder']);
 
-
     // group discation routes
     Route::get('/group-posts', [StudentBlogController::class, 'index']);
+    Route::get('/group-my-posts', [StudentBlogController::class, 'myPosts']);
+    Route::get('/group-my-pending-posts', [StudentBlogController::class, 'pendingPosts']);
+
     Route::post('/create-post', [StudentBlogController::class, 'store']);
     Route::post('/group-posts/delete/{id}', [StudentBlogController::class, 'destroy']);
     Route::post('/create-post-comment', [StudentBlogController::class, 'saveComment']);
 
     // live class related routes
     Route::get('/all-live-classes', [StudentLiveClassController::class, 'index']);
+
+    // student profile settings
+    Route::POST('/profile-update', [LoginController::class, 'updateProfile']);
+    Route::post('/password-update', [LoginController::class, 'updatePassword']);
+
+    // my all transactions
+    Route::get('/transactions', [StudentDashboardController::class, 'myTrx']);
+    Route::get('/transactions/{id}', [StudentDashboardController::class, 'singleTrx']);
+
+
+    // profile verification related routes
+    Route::get('/verification-resend/{email}', [LoginController::class, 'refendEmail'])->name('resend.email');
 
 
     // student logout route
@@ -104,4 +146,4 @@ Route::middleware('auth:sanctum')->prefix('student')->group(function (){
 // ssl comesarz payment urls
 Route::post('/success', [SSLComesarzController::class, 'success']);
 Route::post('/fail', [SSLComesarzController::class, 'fail']);
-Route::post('/cancel', [SSLComesarzController::class, 'cancel']);
+Route::post('/cancel', [SSLComesarzController::class, 'fail']);

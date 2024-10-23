@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('total_incaorrect')->nullable();
             $table->decimal('minus_mark', 8,2)->default(0.00);
             $table->string('exam_type')->default('practice');
+            $table->boolean('show_result')->default(false);
             $table->timestamps();
         });
     }

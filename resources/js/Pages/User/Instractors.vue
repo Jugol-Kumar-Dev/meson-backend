@@ -56,7 +56,7 @@
                                 <div class="d-flex justify-content-left align-items-center">
                                     <div class="avatar-wrapper">
                                         <div class="avatar  me-1">
-                                            <img :src="admin.photo"
+                                            <img :src="admin.photo_url"
                                                 :alt="admin.name" height="32" width="32">
                                         </div>
                                     </div>
@@ -148,7 +148,7 @@ let search = ref(props.filters.search);
 let perPage = ref(props.filters.perPage);
 
 watch([search, perPage], debounce(function ([val, val2]) {
-    Inertia.get('', { search: val, perPage: val2 }, { preserveState: true, replace: true });
+    router.get('', { search: val, perPage: val2 }, { preserveState: true, replace: true });
 }, 300));
 
 let deleteItemModal = (id) => {
@@ -162,7 +162,7 @@ let deleteItemModal = (id) => {
         confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
         if (result.isConfirmed) {
-            Inertia.delete(props.url + '/' + id, { preserveState: true, replace: true, onSuccess: page => {
+            router.delete(props.url + '/' + id, { preserveState: true, replace: true, onSuccess: page => {
                 Swal.fire(
                     'Deleted!',
                     'Your file has been deleted.',

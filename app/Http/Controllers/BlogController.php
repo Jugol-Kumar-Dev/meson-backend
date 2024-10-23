@@ -79,7 +79,7 @@ class BlogController extends Controller
         $data = Request::validate([
             'title' => 'required|max:250|min:5',
             'category_id' => 'required',
-            'description' => 'nullable|max:800',
+            'description' => 'nullable|max:1000',
             'content' => 'required',
             'tags' => 'array',
             'p_status' => 'boolean',
@@ -161,7 +161,7 @@ class BlogController extends Controller
         $data = Request::validate([
             'title' => 'required|max:250|min:5',
             'category_id' => 'required',
-            'description' => 'nullable|max:300',
+            'description' => 'nullable|max:1000',
             'content' => 'required',
             'tags' => 'array',
             'cover' => 'nullable'

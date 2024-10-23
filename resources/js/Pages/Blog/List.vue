@@ -60,29 +60,18 @@
                             </svg>
                         </button>
                         <div class="dropdown-menu">
-                            <a :href="blog.show_url"  target="_blank" class="dropdown-item">
-                                <Icon title="play-circle"/>
-                               <span class="ms-1">Show</span>
-                            </a>
-
                             <Link :href="blog.edit_url"  class="dropdown-item">
                                 <Icon title="pencil"/>
                                 <span class="ms-1">Edit</span>
                             </Link>
-
                             <span class="dropdown-item" @click="deleteItemModal(blog.id)">
                                 <Icon title="trash"/>
                                <span class="ms-1">Delete</span>
                             </span>
-
-<!--                            <a :href="blog.comment_url"  target="_blank" class="dropdown-item">-->
-<!--                                <Icon title="disc"/>-->
-<!--                                <span class="ms-1">Comments</span>-->
-<!--                            </a>-->
-
                         </div>
-
                     </div>
+
+
                     <a href="javascript:void(0)" class="card-img-top">
                         <!-- Img  -->
                         <img :src="blog.cover" class="card-img-top rounded-top-md" alt=""></a>
@@ -104,7 +93,7 @@
                         <div class="row align-items-center g-0 mt-1">
                             <div class="col-auto">
                                 <div class="avatar avatar-lg">
-                                    <img :src="blog.user.photo" :alt="blog.user.name">
+                                    <img :src="blog.user.photo_url" :alt="blog.user.name">
                                 </div>
                             </div>
                             <div class="col ms-1">

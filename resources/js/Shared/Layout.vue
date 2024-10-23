@@ -51,8 +51,8 @@
                     {{ new Date().getFullYear() }}<a class="ms-25" href="#"
                         target="_blank">{{ $page.props.appName }}</a><span class="d-none d-sm-inline-block">, All rights
                         Reserved</span></span>
-<!--                <span class="float-md-end d-none d-md-block text-sm" style="font-size:10px">Hand-crafted & Made with | -->
-<!--                    <a href="https://www.fb.com/zogul.kumar/">Jugol Kumar</a></span>-->
+                <span class="float-md-end d-none d-md-block text-sm" style="font-size:10px">Made with |
+                    <a href="https://creativetechpark.com">Web Development Company</a>Creative Tech Park</span>
             </p>
         </footer>
         <button class="btn btn-primary btn-icon scroll-top" type="button"></button>

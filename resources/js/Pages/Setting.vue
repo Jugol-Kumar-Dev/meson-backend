@@ -17,6 +17,11 @@
         <div class="row">
             <div class="col-md-3 d-flex flex-column gap-2">
                 <div class="btn btn-outline-primary"
+                     :class="{ 'bg-primary text-white fw-bolder': currentTab === 'profileSettins' }"
+                     @click="setActiveTab('profileSettins')">
+                    Profile Settings
+                </div>
+                <div class="btn btn-outline-primary"
                      :class="{ 'bg-primary text-white fw-bolder': currentTab === 'homesettings' }"
                      @click="setActiveTab('homesettings')">
                     Home Setting
@@ -30,6 +35,17 @@
                      :class="{ 'bg-primary text-white fw-bolder': currentTab === 'homeMessage' }"
                      @click="setActiveTab('homeMessage')">
                     Second Home Section
+                </div>
+
+                <div class="btn btn-outline-primary"
+                     :class="{ 'bg-primary text-white fw-bolder': currentTab === 'counter' }"
+                     @click="setActiveTab('counter')">
+                    Success Rate
+                </div>
+                <div class="btn btn-outline-primary"
+                     :class="{ 'bg-primary text-white fw-bolder': currentTab === 'notice' }"
+                     @click="setActiveTab('notice')">
+                    Notice
                 </div>
 
 <!--                <div class="btn btn-outline-primary"
@@ -50,6 +66,31 @@
 
             </div>
             <div class="col-md-9">
+                <div class="card" v-if="currentTab === 'profileSettins'">
+                    <div class="card-header d-flex gap-2 mb-1">
+                        <h3 class="card-title m-0">Profile Settings</h3>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <Text class="w-100 mb-0" v-model="createForm.profile.name"
+                              label="Site Name"
+                              placeholder="App name"/>
+                        <Text class="w-100 mb-0" v-model="createForm.profile.email"
+                              label="Site Email"
+                              placeholder="Email Address"/>
+                        <Text class="w-100 mb-0" v-model="createForm.profile.phone"
+                              label="Phone Number"
+                              placeholder="Phone"/>
+                        <Text class="w-100 mb-0" v-model="createForm.profile.whatsapp"
+                              label="Whatsapp Number"
+                              placeholder="Whatsapp"/>
+                        <Text class="w-100 mb-0" v-model="createForm.profile.address"
+                              label="Address"
+                              placeholder="Address"/>
+                        <button class="btn btn-success mt-5" @click="updateSettings">Update Settings</button>
+                    </div>
+                </div>
+
+
                 <div class="card" v-if="currentTab === 'homesettings'">
                     <div class="card-header d-flex gap-2 mb-1">
                         <h3 class="card-title m-0">Home Settings</h3>
@@ -145,17 +186,44 @@
                     </div>
                 </div>
 
-
-                <div class="card" v-if="currentTab === 'contactUs'">
+                <div class="card" v-if="currentTab === 'counter'">
                     <div class="card-header d-flex gap-2 mb-1">
-                        <h3 class="card-title m-0">Contact Us</h3>
+                        <h3 class="card-title m-0">Success Rate</h3>
                     </div>
-                    <div class="card-body">
-                        <Textarea v-model="createForm.contactUs" style="height:500px;"
-                                  placeholder="Contact us page content...."/>
-                        <button class="btn btn-success" @click="updateSettings">Update Settings</button>
+                    <div class="card-body d-flex flex-column">
+                        <Text class="w-100 mb-0" v-model="createForm.counter.title"
+                              label="Title"/>
+
+                        <Text class="w-100 mb-0" v-model="createForm.counter.students"
+                              label="Total Students"/>
+
+                        <Text class="w-100 mb-0" v-model="createForm.counter.courses"
+                              label="Runing Courses"/>
+                        <Text class="w-100 mb-0" v-model="createForm.counter.certificate"
+                              label="Provide Certificates"/>
+                        <button class="btn btn-success mt-5" @click="updateSettings">Update Settings</button>
                     </div>
                 </div>
+
+
+
+                <div class="card" v-if="currentTab === 'notice'">
+                    <div class="card-header d-flex gap-2 mb-1">
+                        <h3 class="card-title m-0">Notice</h3>
+                    </div>
+                    <div class="card-body">
+                        <label>End Time From Now</label>
+
+                        <input type="date" v-model="createForm.notice.notice_date" class="form-control" placeholder="enter end date"/>
+
+                        <Textarea v-model="createForm.notice.notice" style="height:500px;"
+                                  placeholder="Notice..."/>
+                        <button class="btn btn-success" @click="updateSettings">Update Settings</button>
+
+                    </div>
+                </div>
+
+
                 <div class="card" v-if="currentTab === 'headerPages'">
                     <div class="card-header d-flex gap-2 mb-1">
                         <h3 class="card-title m-0">Header Pages</h3>
@@ -174,12 +242,13 @@
                         <h3 class="card-title m-0">Footer Pages</h3>
                     </div>
                     <div class="card-body">
-                        <v-select v-model="createForm.footerpages"
-                                  label="title"
-                                  multiple="true"
-                                  :options="pages" :reduce="page => page.id"></v-select>
-                        <Textarea v-model="createForm.footerText" style="height:500px;"
-                                  placeholder="Footer About Content...."/>
+                        <datepicker v-model="createForm.notice.notice_date"
+                                    :minimumView="'time'"
+                                    inputFormat="yyyy-MM-dd HH:mm"
+                                    class="form-control"
+                                    placeholder="Start Time"/>
+                        <Textarea v-model="createForm.notice.notice" style="height:500px;"
+                                  placeholder="Notice..."/>
                         <button class="btn btn-success mt-5" @click="updateSettings">Update Settings</button>
                     </div>
                 </div>
@@ -199,6 +268,7 @@ import {useForm} from "@inertiajs/vue3";
 import Text from "@/Components/form/Text.vue";
 import {onMounted, ref} from "vue";
 import Textarea from "@/Components/form/Textarea.vue";
+import Datepicker from "vue3-datepicker";
 
 const props = defineProps({
     pages: Array,
@@ -218,7 +288,17 @@ let createForm = useForm({
     topForCats: props.bSettings.topForCats ?? '',
 
     secondSecond:  props.bSettings.secondSecond ?? {},
-
+    profile: props?.bSettings.profile,
+    counter: props?.bSettings.counter ?? {
+        title:null,
+        students:null,
+        courses:null,
+        certificate:null,
+    },
+    notice:props?.bSettings?.notice ?? {
+      notice_date:null,
+      notice:null
+    },
 
 
     s4Title: props.bSettings.s4Title ?? '',
@@ -273,3 +353,4 @@ const updateSettings = () => {
 // onMounted(()=> createForm.value = props.bSettings)
 
 </script>
+

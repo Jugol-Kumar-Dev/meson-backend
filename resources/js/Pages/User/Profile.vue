@@ -44,7 +44,7 @@
                             <Text v-model="updateForm.email" type="email" label="Email" placeholder="Email Address"
                                 :error="updateForm.errors.email" />
                         </div>
-                        <div class="col-12 col-sm-6 mb-1">
+<!--                        <div class="col-12 col-sm-6 mb-1">
                             <label class="form-label">Gender</label>
                             <select class="form-select" v-model="updateForm.gender">
                                 <option :value="null">Select a gender</option>
@@ -59,15 +59,15 @@
                                 <option value="unmarried">Unmarried</option>
                                 <option value="married">Married</option>
                             </select>
-                        </div>
+                        </div>-->
                         <div class="col-12 col-sm-6 mb-1">
-                            <label>Active From: </label>
-                            <datepicker v-model="updateForm.dob" class="form-control" placeholder="Date of Birth" />
+                            <Text v-model="updateForm.about" type="text" label="About" placeholder="Lactureer Du, PHD USA"
+                                  :error="updateForm.errors.about" />
                         </div>
-                        <div class="col-12 mb-1">
+<!--                        <div class="col-12 mb-1">
                             <Textarea v-model="updateForm.about" label="About Me" placeholder="About Me"
                                 :error="updateForm.errors.about" />
-                        </div>
+                        </div>-->
                         <div class="col-12">
                             <button type="submit"
                                 class="btn btn-primary mt-1 me-1 waves-effect waves-float waves-light">Save

@@ -84,7 +84,7 @@ class User extends Authenticatable
 
     public function getPhotoUrlAttribute(): ?string
     {
-        return $this->photo ? Storage::url($this->photo) : null;
+        return $this->photo ? Storage::url($this->photo) : asset('/image/image.png');
     }
 
     protected function password(): Attribute
@@ -94,13 +94,13 @@ class User extends Authenticatable
         );
     }
 
-    protected function photo(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => $value ? Storage::url($value) : '/image/image.png',
-
-        );
-    }
+//    protected function photo(): Attribute
+//    {
+//        return Attribute::make(
+//            get: fn ($value) => $value ? Storage::url($value) : '/image/image.png',
+//
+//        );
+//    }
 
     protected function certificate(): Attribute{
         return Attribute::make(

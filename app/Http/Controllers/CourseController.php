@@ -47,7 +47,7 @@ class CourseController extends Controller
                     'price' => $course->price,
                     'active_on' => $course->active_on->format('d M Y'),
                     'category' => $course->category->name,
-                    'instructor' => $course->user->name,
+                    'instructor' => $course?->user?->name,
                     'show_url' => URL::route('courses.show', $course->id),
                     'edit_url' => URL::route('courses.edit', $course->id),
                 ]),
@@ -88,7 +88,7 @@ class CourseController extends Controller
             'cover' => "required",
             'category_id' => "required",
             'name' => "required",
-            'description' => "required|max:300",
+            'description' => "required|max:1000",
             'price' => "required",
 //            'active_on' => "required",
         ]);
@@ -193,8 +193,15 @@ class CourseController extends Controller
      */
     public function edit(Course $course)
     {
+        $course->instractors = $course->instractors ? json_decode($course->instractors) : [] ; // User::query()->select(['id','name', 'photo'])->whereIn('id', )->get();
+        $course->inclues = $course->inclues ? json_decode($course->inclues) : NULL;
+        $course->features = $course->features ? json_decode($course->features) : NULL;
+        $course->faqs = $course->faqs ? json_decode($course->faqs) : NULL;
         return inertia('Course/Update', [
             'course' => $course,
+            'instractors' => User::query()->select(['id','name'])
+                ->where('role', 'instructor')
+                ->get(),
             'url' => URL::route('courses.index'),
             'categories' => Category::select('id', 'name')->get(),
         ]);
@@ -215,71 +222,31 @@ class CourseController extends Controller
 
     // course update methods
 
-    public function updateCourses(Request $request, $id){
+    public function updateCourses($id){
 
         $course = Course::findOrFail($id);
 
-        $image_path = '';
-        $files_path = '';
-
         if (Request::hasFile('cover')) {
-            $image_path = public_path().'/'.$course->cover;
-            if ($image_path){
-                @unlink($image_path);
-            }
-            $image_path = Request::file('cover')->store('image', 'public');
-        }else{
-            if (Request::input('cover') != null){
-                $old_path = explode('/', Request::input('cover'));
-                $image_path = $old_path[2]."/".$old_path[3];
-            }else{
-                $image_path = NULL;
-            }
-        }
-
-
-        if (Request::hasFile('files')) {
-            $delete_path = public_path().'/'.$course->files;
-            if ($delete_path){
-                @unlink($delete_path);
-            }
-            $files_path = Request::file('files')->store('image', 'public');
-        }else{
-            if (Request::input('files') != null){
-                $old_path = explode('/', Request::input('files'));
-                $files_path = $old_path ? $old_path[2]."/".$old_path[3] : null;
-            }else{
-                $files_path = NULL;
-            }
+            $course->cover = Request::file('cover')->store('image', 'public');
         }
 
         $course->name = Request::input('name');
         $course->description = Request::input('description');
         $course->content = Request::input('content');
-        $course->cover = $image_path;
-        $course->files = $files_path ?? null;
+        $course->video = Request::input('video');
         $course->price = Request::input('price');
         $course->user_id = Auth::user()->id;
+
+        $course->instractors = json_encode(Request::input('instractors'));
+        $course->inclues = json_encode(Request::input('inclues'));
+        $course->features = json_encode(Request::input('features'));
+        $course->faqs = json_encode(Request::input('faqs'));
+
         $course->category_id = Request::input('category_id');
-        $course->active_on = date("Y-m-d", strtotime(Request::input('active_on')));
+        $course->active_on = !Request::input('active_on') ? now()->format("Y-m-d") : date("Y-m-d", strtotime(Request::input('active_on')));
         $course->access_time = Request::input('access_time');
         $course->access_type = Request::input('access_type') != "" ? Request::input('access_type') : NULL;
         $course->save();
-
-
-        $vimeo_url = '';
-        if (Request::hasFile('video')) {
-            $vimeo_url = Vimeo::upload(Request::file('video'), [
-                'name' => Request::input('name'),
-                'description' => Request::input('description')
-            ]);
-
-            $course->video = $vimeo_url;
-            $course->save();
-        }
-
-
-
         return Redirect::route('courses.index');
     }
 

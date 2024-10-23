@@ -49,43 +49,40 @@ class Mocktest extends Model
     {
         return $this->belongsTo('App\Models\User');
     }
-
     public function sub_categories()
     {
         return $this->belongsToMany('App\Models\SubCategory')->withPivot('question')->withTimestamps();
     }
-
     public function users() // get users who already attend this mock
     {
         return $this->belongsToMany('App\Models\User', 'mocktest_user');//->withPivot('exam_token');//->withTimestamps();//->withPivot('mark')->withTimestamps();
     }
+    public function courses(){
+        return $this->belongsToMany(Course::class,'course_mocktest')->withTimestamps();
+    }
 
     public function givenAnswers() // who users already aswers this mock all  answers
     {
-        return $this->belongsToMany(User::class, 'mocktest_answer');//->withPivot('')
-    }
-
-    public function courses(){
-        return $this->belongsToMany(Course::class,'course_mocktest')->withTimestamps();
+        return $this->belongsToMany(User::class, 'mocktest_answer');
     }
 
     public function questions() //: BelongsToMany
     {
 //        return $this->belongsToMany(Mocktest::class,'course_mocktest')->withPivot('status')->withTimestamps();
-
-        return $this->belongsToMany(Question::class, 'mocktest_questions', 'mocktest_id', 'question_id')->withPivot('user_id')->withTimestamps();
+//        return $this->belongsToMany(Question::class, 'mocktest_questions', 'mocktest_id', 'question_id')->withPivot('user_id')->withTimestamps();
+        return $this->belongsToMany(Question::class, 'mocktest_answer', 'mocktest_id', 'question_id')->withPivot('user_id')->withTimestamps();
     }
 
 
-    public function exminers(): BelongsToMany
-    {
-        return $this->belongsToMany(Question::class, 'mocktest_questions', 'mocktest_id', 'user_id')->withTimestamps();
-    }
-
-    public function attendQuestions(): BelongsToMany
-    {
-        return $this->belongsToMany(Question::class, 'attend_mocktest_questions', 'mocktest_id', 'user_id')->withTimestamps();
-    }
+//    public function exminers(): BelongsToMany
+//    {
+//        return $this->belongsToMany(Question::class, 'mocktest_questions', 'mocktest_id', 'user_id')->withTimestamps();
+//    }
+//
+//    public function attendQuestions(): BelongsToMany
+//    {
+//        return $this->belongsToMany(Question::class, 'attend_mocktest_questions', 'mocktest_id', 'user_id')->withTimestamps();
+//    }
 
 
 }

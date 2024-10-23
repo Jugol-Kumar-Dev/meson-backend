@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\GroupController;
 use App\Http\Controllers\LiveClassCOntroller;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\BusinessSettingController;
@@ -49,7 +50,7 @@ use Inertia\Inertia;
 */
 
 
-Route::get('/', fn()=> view('home'))->name('master');
+Route::get('/', fn()=> Inertia::render('Auth/Login'))->name('master');
 
 Route::middleware('guest')->group(function (){
     Route::get('/login', fn()=> Inertia::render('Auth/Login'));
@@ -116,6 +117,8 @@ Route::middleware(['auth'])->group(function () {
 
 
         Route::resource('transactions', TransactionController::class);
+        Route::get('/show-transactions/{trx}', [TransactionController::class, 'show']);
+
         Route::resource('subscriptions', SubscriptionController::class);
         Route::resource('live-class', LiveClassController::class);
         Route::resource('meetings', ZoomController::class);
@@ -136,6 +139,7 @@ Route::middleware(['auth'])->group(function () {
 
 
         Route::get('instructors', [UserController::class, 'instructor'])->name('instructor.list');
+        Route::delete('instructors/{id}', [UserController::class, 'destroy']);
         Route::get('admins', [UserController::class, 'admin'])->name('admin.list');
         Route::post('admins', [UserController::class, 'store'])->name('admin.store');
 
@@ -162,6 +166,15 @@ Route::middleware(['auth'])->group(function () {
 
         Route::resource('review', ReviewController::class);
 
+        Route::resource('groups', GroupController::class);
+        Route::get('/my-posts', [GroupController::class, 'myPosts']);
+        Route::get('/pending-posts', [GroupController::class, 'pendingPosts']);
+        Route::post('groups/save-comment/{postId}', [GroupController::class, 'saveComment']);
+        Route::delete('groups/delete-comments/{comment_id}', [CommentController::class, 'deleteBlogComment'])->name('delete.blog_comment');
+
+        Route::post('/update-status/{id}', [GroupController::class, 'updateStatus']);
+        Route::get('/update-comment-status/{id}', [GroupController::class, 'updateCommentStatus']);
+
 
         Route::get('/chats', [ChatController::class, 'index'])->name('chats');
         Route::get('chat/users', [ChatController::class, 'users'])->name('chat.users');//->middleware('auth');;
@@ -177,14 +190,14 @@ Route::middleware(['auth'])->group(function () {
     });
 
 
-    Route::middleware(['is_student','is_verified'])->group(function () {
+/*    Route::middleware(['is_student','is_verified'])->group(function () {
         Route::get('dashboard', [DashboardController::class, 'student'])->name('dashboard');
         Route::resource('wishlists', WishlistController::class);
         Route::get('purchase', [StudentController::class, 'purchase_history'])->name('purchase_history');
         Route::get('courses', [StudentController::class, 'course_list'])->name('course_list');
         Route::get('courses/{slug}', [StudentController::class, 'course_details'])->name('course_details');
         Route::get('mocktest', [StudentController::class, 'mocktest_list'])->name('mocktest_list');
-        Route::get('mocktest/{id}', [StudentController::class, 'mocktest_details'])->name('mocktest_enroll');
+        Route::get('mocktest/{id}', [StudentController::class, 'mocktest_details'])->name('mocktest_details');
         Route::get('mocktest-start/{id}', [StudentController::class, 'mocktest_enroll'])->name('mocktest_enroll');
         Route::post('mocktest', [StudentController::class, 'mocktest_enroll_store'])->name('mocktest_enroll_store');
         Route::get('mocktest/single-result/{givenid}', [StudentController::class, 'showResult'])->name('single_mock_result');
@@ -197,10 +210,10 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('/reset-password', [AdminController::class, 'resetPassword']);
 
-        Route::get('/student/chats', [StudentChatController::class, 'index'])->name('chats');
+        Route::get('/student/chats', [StudentChatController::class, 'index'])->name('student.chats');
 
 
-    });
+    });*/
 });
 
 Route::post('/update-cat/{id}', [CategoryController::class, 'updatecheck']);

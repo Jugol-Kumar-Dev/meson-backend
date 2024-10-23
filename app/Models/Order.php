@@ -41,4 +41,9 @@ class Order extends Model
     {
         return $this->belongsTo('App\Models\Course');
     }
+
+    public function orderDetails()
+    {
+        return $this->hasOne(OrderDetails::class, 'order_id');
+    }
 }

@@ -40,9 +40,9 @@ class VerificationController extends Controller
             if ($user && $user != null){
                 Mail::to($user)->send(new SendVerificationMail($user));
 //            Notification::sendNow($user, new SendVerificationNotification($user));
-                return back()->with('success', 'Verification Mail Send Successful.');
+                return response()->json(['success'=>'Verification Mail Send Successful.']);
             }else{
-                return back()->with('error', 'Email Address is not valid.');
+                return response()->json(['error'=> 'Email Address is not valid.']);
             }
         }
 

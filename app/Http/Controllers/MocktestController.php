@@ -267,12 +267,62 @@ class MocktestController extends Controller
 
     public function getMocktestStudentResult()
     {
-        $st = new StudentController();
-        $data = $st->showResult(\request()->input('id'), true);
+
+
+        $result = MocktestUser::query()->with(['mocktest', 'givenAnswers', 'givenAnswers.question'])->findOrFail(\request()->input('id'));
+
+        $allUsers = MocktestUser::query()->where('mocktest_id', $result->mocktest_id)
+            ->orderByDesc('mark')
+            ->select('id')
+            ->get();
+
+        $position = $allUsers->search(function ($user) use ($result) {
+                return $user->id === $result->id;
+            }) + 1;
+
+        $result->position = $position;
+        $result->partisipants = $allUsers->count();
+
+        $result->load('user:id,name,email,phone');
+
+        $answers = MocktestAnswer::query()
+            ->with('question')
+            ->where('mocktest_user_id', $result->id)
+            ->where('user_id', $result->user_id)
+            ->get();
 
         return inertia('Mocktest/ShowResult',[
-           'result' => $data
+            'answers' => $answers,
+            'result' => $result
         ]);
+
+
+        $answers = MocktestAnswer::query()
+            ->with('question')
+            ->where('mocktest_user_id', $id)
+            ->where('user_id', Auth::id())
+            ->get();
+
+        $marks = 0;
+        $correct = 0;
+        $incorrect = 0;
+
+        foreach ($answers as $item) {
+            if ($item["user_answer"] == Str::lower($item->question->answer)) {
+                $marks += $item->question->mark;
+                $correct++;
+            } else {
+                $incorrect++;
+            }
+        }
+
+        $givenAnsweres = [
+            'marks' => $marks,
+            'correct' => $correct,
+            'incorrect' => $incorrect,
+            'totalAnswered' => count($answers)
+        ];
+
     }
 
 

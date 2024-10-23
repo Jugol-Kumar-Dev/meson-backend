@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\URL;
 class SSLComesarzController extends Controller
 {
 
-    public function orderSSLPHP($order, $data)
+    public function orderSSLPHP($order, $data, $orderDetails)
     {
         $uniqueId = uniqid();
         /* PHP */
@@ -93,26 +93,24 @@ class SSLComesarzController extends Controller
 
         $validation = $sslc->orderValidate(Request::all(), $tran_id, $amount, $currency);
         if ($validation) {
-            $trx = Transaction::query()->with('course:id')
+            $trx = Transaction::query()->with('course')
                 ->where('trx', Request::input('tran_id'))
                 ->first();
 
             if($trx){
+                $enroll_start = now();
+                $enroll_end = now()->add($trx->course->access_type, $trx->course->access_time);
                 $trx->update([
-                    'status' => 'Pending',
+                    'status' => 'Success',
                     'payment_status' => 'paid'
                 ]);
                 $trx->order->update([
                     'status' => 'approved',
+                    'enroll_start' => date("Y-m-d", strtotime($enroll_start)),
+                    'enroll_expire' => date("Y-m-d", strtotime($enroll_end)),
                     'is_show' => true,
                 ]);
-
                 return redirect()->to(env('FRONTEND_URL')."/payment/success?trx_id=$trx->trx");
-
-//                return response()->json([
-//                    "status" => 200,
-//                    'message' => "Order Complete. Thanks For Your Order."
-//                ]);
             }
         }
 
@@ -122,31 +120,17 @@ class SSLComesarzController extends Controller
         ], 500);
     }
 
-    public function fail(Request $request)
+    public function fail()
     {
-        return[
-            "message"=> "failed route called",
-            'data'=> \request()->all()
-        ];
-        $tran_id = $request->input('tran_id');
-        $order_details = DB::table('orders')
-            ->where('transaction_id', $tran_id)
-            ->select('transaction_id', 'status', 'currency', 'grand_total')->first();
-
-        if($order_details){
-            if ($order_details->status == 'Pending') {
-                $update_product = DB::table('orders')
-                    ->where('transaction_id', $tran_id)
-                    ->update(['status' => 'Failed']);
-                return \redirect()->route('orderComplete');
-            } else if ($order_details->status == 'Processing' || $order_details->status == 'Complete') {
-                return \redirect()->route('orderComplete');
-            } else {
-                return \redirect()->route('orderComplete');
-            }
-        }else{
-            return \redirect()->route('orderComplete');
+        $trx = Transaction::query()->with('course:id')
+            ->where('trx', Request::input('tran_id'))
+            ->first();
+        if($trx){
+            $trx->delete();
+            $trx->order->delete();
+            $trx->order->orderDetails->delete();
         }
+        return redirect()->to(env('FRONTEND_URL')."/payment/failed");
     }
 
     public function cancel(Request $request)

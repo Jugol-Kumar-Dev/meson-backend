@@ -99,8 +99,10 @@
                                             start exploring the resources or showcasing your work.
                                         </p>
                                         <p style="margin: 0 0 24px;">
-                                            If you did not sign up to Amcpaedia, please ignore this email or contact us at
-                                            <a href="mailto:amcpaedia@gmail.com" class="hover-underline" style="--text-opacity: 1; color: #7367f0; color: rgba(115, 103, 240, var(--text-opacity)); text-decoration: none;">amcpaedia@gmail.com</a>
+                                            If you did not sign up to {{ env('APP_NAME') }}, please ignore this email or contact us at
+                                            <a href="mailto:{{ env('SUPPORT_EMAIL') }}" class="hover-underline" style="--text-opacity: 1; color: #7367f0; color: rgba(115, 103, 240, var(--text-opacity)); text-decoration: none;">
+                                                {{ env('SUPPORT_EMAIL') }}
+                                            </a>
                                         </p>
                                         <a href="{{ route('api.verifiedEmail', ['email' => base64_encode($user->email)]) }}"
 
@@ -121,9 +123,9 @@
                                         </table>
                                         <p style="margin: 0 0 16px;">
                                             Not sure why you received this email? Please
-                                            <a href="mailto:amcpaedia@gmail.com" class="hover-underline" style="--text-opacity: 1; color: #7367f0; color: rgba(115, 103, 240, var(--text-opacity)); text-decoration: none;">let us know</a>.
+                                            <a href="mailto:{{ env('SUPPORT_EMAIL') }}" class="hover-underline" style="--text-opacity: 1; color: #7367f0; color: rgba(115, 103, 240, var(--text-opacity)); text-decoration: none;">let us know</a>.
                                         </p>
-                                        <p style="margin: 0 0 16px;">Thanks, <br>The Amcpaedia Team</p>
+                                        <p style="margin: 0 0 16px;">Thanks, <br>The {{ env('APP_NAME') }} Team</p>
                                     </td>
                                 </tr>
                                 <tr>

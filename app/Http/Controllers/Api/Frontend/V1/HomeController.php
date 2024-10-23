@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\Page;
+use App\Models\Review;
 
 class HomeController extends Controller
 {
@@ -18,6 +20,18 @@ class HomeController extends Controller
         $this->bs = new BusinessSettingController();
     }
 
+    public function heraderCategories(): \Illuminate\Http\JsonResponse
+    {
+        $ids = json_decode($this->bs->get_setting('heroCats'));
+        $category = Category::query()
+            ->whereIn('id', $ids)
+            ->select('id', 'name')
+            ->get();
+
+        return response()->json([
+            'categories' => $category
+        ]);
+    }
     public function heroCategories(): \Illuminate\Http\JsonResponse
     {
         $ids = json_decode($this->bs->get_setting('heroCats'));
@@ -96,18 +110,76 @@ class HomeController extends Controller
             ->where('type', '=', 'blog')
             ->select(['id','description', 'image', 'title'])
             ->latest()
-            ->take(12)
+            ->take(6)
             ->get();
         return response()->json($blogs);
+    }
+
+    public function singleBlogs($id): \Illuminate\Http\JsonResponse
+    {
+        $blog = Blog::query()->findOrFail($id);
+        return response()->json($blog);
+    }
+
+
+    public function courseCateories(): \Illuminate\Http\JsonResponse
+    {
+        $categories = Category::query()->select(['id', 'name'])->get();
+        return response()->json($categories);
+    }
+
+    public function categoryCourses(): \Illuminate\Http\JsonResponse
+    {
+        $courses = Course::query()
+            ->when(request()->input('category'), function ($q, $search){
+                $q->where('category_id', $search);
+            })
+            ->when(request()->input('search'), function ($q, $search){
+                $q->where('name', 'LIKE', "%$search%");
+            })
+            ->select(['id', 'category_id', 'name', 'price', 'cover'])
+            ->simplePaginate(16)
+            ->withQueryString();
+
+        return response()->json($courses);
+    }
+
+    public function studentReviews(): \Illuminate\Http\JsonResponse
+    {
+        $reviews = Review::query()
+            ->select(['name', 'review'])
+            ->latest()
+            ->take(12)
+            ->get();
+        return response()->json($reviews);
+    }
+
+
+    public function footerPages(): \Illuminate\Http\JsonResponse
+    {
+        $reviews = Page::query()
+            ->select(['id', 'title', 'slug'])
+            ->latest()
+            ->get();
+        return response()->json($reviews);
+    }
+
+    public function singlePage($slug): \Illuminate\Http\JsonResponse
+    {
+        $page = Page::query()
+            ->where('slug', $slug)
+            ->first();
+        return response()->json($page);
     }
 
 
     public function getSettings(): \Illuminate\Http\JsonResponse
     {
+
         $data = request()->all();
         $response = [];
         foreach (explode(',', $data['name']) as $item) {
-            $response[$item] = json_decode($businessSettings->get_setting($item));
+            $response[$item] = json_decode($this->bs->get_setting($item));
         }
         return response()->json($response);
     }

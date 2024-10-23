@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -36,7 +37,7 @@ class HandleInertiaRequests extends Middleware
                     'id' => Auth::id(),
                     'username' => Auth::user()->name,
                     'role' => Auth::user()->role,
-                    'photo' => Auth::user()->photo ?? '/images/avatar.png',
+                    'photo' => Storage::url(Auth::user()->photo) ?? '/images/avatar.png',
                 ]
             ] : null,
             'ADMIN_URL' => env('APP_URL').'/admin',

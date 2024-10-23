@@ -1,4 +1,3 @@
-<!--<script src="../../../../../amcpaedia/nuxt.config.ts"></script>-->
 <template>
 
     <Layout>

@@ -28,16 +28,16 @@
                                         <Password v-model="form.password" label="Password" :error="form.errors.password" />
                                         <div class="d-flex align-items-center justify-content-between">
                                             <Checkbox v-model="form.remember" label="Remember Me" />
-                                            <Link href="/forgot/password">Forgot Password?</Link>
+<!--                                            <Link href="/forgot/password">Forgot Password?</Link>-->
                                         </div>
                                         <button class="btn btn-primary w-100" tabindex="4" type="submit" :disabled="form.processing">Sign in</button>
                                     </form>
-                                    <p class="text-center mt-2">
-                                        <span>New on our platform?</span>
-                                        <a href="/register">
-                                            <span> Create an account</span>
-                                        </a>
-                                    </p>
+<!--                                    <p class="text-center mt-2">-->
+<!--                                        <span>New on our platform?</span>-->
+<!--                                        <a href="/register">-->
+<!--                                            <span> Create an account</span>-->
+<!--                                        </a>-->
+<!--                                    </p>-->
                                 </div>
                             </div>
                             <!-- /Login basic -->

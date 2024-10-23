@@ -242,8 +242,8 @@ const editChapterItem = (url, id) => {
                                             <span class="badge bg-primary w-25">{{ course.orders_count }}</span>
                                         </div>
                                         <div class="d-flex align-items-start w-100 justify-content-between">
-                                            <h6>Zoom Class:</h6>
-                                            <span class="badge bg-primary w-25">{{ zooms?.length }}</span>
+                                            <h6>Live Class:</h6>
+                                            <span class="badge bg-primary w-25">{{ liveClass?.length }}</span>
                                         </div>
                                         <div class="d-flex align-items-start w-100 justify-content-between">
                                             <h6>Total Chapter:</h6>

@@ -82,11 +82,6 @@
 
 
                             <div class="btn-group dropup dropdown-icon-wrapper">
-                                <button type="button"
-                                        @click="showItem(student)"
-                                        class="showbtn bg-primary waves-effect bt-sm waves-float waves-light">
-                                    <Icon title="eye"/>
-                                </button>
 
                                 <button type="button"
                                         class="btn dropdown-toggle dropdown-toggle-split waves-effect waves-float waves-light"
@@ -113,11 +108,11 @@
                                         <Icon title="eye"/>
                                        <span class="ms-1">Show</span>
                                     </Link>
-<!--                                    <span class="dropdown-item"
-                                          @click="editItem(student.show_url)">
-                                        <Icon title="pencil"/>
-                                        <span class="ms-1">Edit</span>
-                                    </span>-->
+
+                                    <Link class="dropdown-item" :href="`/panel/groups?user_id=${student.id}`">
+                                        <vue-feather type="users"/>
+                                        <span class="ms-1">Group</span>
+                                    </Link>
                                     <span class="dropdown-item"
                                           @click="deleteItemModal(student.delete_url)">
                                         <Icon title="trash"/>
@@ -210,7 +205,7 @@
         </div>
     </Modal>
 
-    <Modal id="editItem" title="Edit New User" v-vb-is:modal>
+    <Modal id="editItem" title="Edit User" v-vb-is:modal>
         <form @submit.prevent="updateStudent(showData.id)">
             <div class="modal-body">
                 <Text v-model="updateForm.name" type="text" label="Name" placeholder="Name"
@@ -288,12 +283,13 @@
 
 
     let updateStudent = (id) => {
-        router.post("panel/student/update/"+id, updateForm, {
-            onSuccess: ()=>{
-                document.getElementById('editItem').$vb.modal.hide()
-                updateForm.reset()
-            }
-        })
+        alert("called")
+        // router.post("panel/student/update/"+id, updateForm, {
+        //     onSuccess: ()=>{
+        //         document.getElementById('editItem').$vb.modal.hide()
+        //         updateForm.reset()
+        //     }
+        // })
     }
 
 

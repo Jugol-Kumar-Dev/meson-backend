@@ -13,7 +13,7 @@ class IsVerified
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\JsonResponse
      */
     public function handle(Request $request, Closure $next)
     {
@@ -22,7 +22,7 @@ class IsVerified
             if(Auth::User()->email_verified_at != null){
                 return $next($request);
             }else{
-                return redirect("/verification");
+                return response()->json('Please Verify First Your Account', 401);
             }
         }else {
             return $next($request);

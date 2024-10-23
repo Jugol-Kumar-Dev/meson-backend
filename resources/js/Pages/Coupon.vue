@@ -295,7 +295,7 @@ import Layout from "@/Shared/Layout.vue";
 
     let avticationStatus = (value, status) => {
         console.log(value);
-        Inertia.post(`/panel/coupon/activation/${value}?show_status=${status}`, {
+        router.post(`/panel/coupon/activation/${value}?show_status=${status}`, {
             onSuccess: () => {
                 //
             }
@@ -307,7 +307,7 @@ import Layout from "@/Shared/Layout.vue";
     let perPage = ref(props.filters.perPage);
 
     watch([search, perPage], debounce(function ([val, val2]) {
-        Inertia.get(props.url, {search: val, perPage: val2}, {preserveState: true, replace: true});
+        router.get(props.url, {search: val, perPage: val2}, {preserveState: true, replace: true});
     }, 300));
 
 </script>

@@ -32,6 +32,26 @@
                                         <Text v-model="createForm.name" :error="props.errors.name" label="Course Title"
                                               placeholder="Course title"/>
                                     </div>
+                                    <div class="col-6">
+                                        <label>Access Time:</label>
+                                        <fieldset>
+                                            <div class="input-group text-black">
+                                                <input type="text" v-model="createForm.access_time" class="form-control"
+                                                       placeholder="Access Limitation Time" aria-label="Amount">
+                                                <select class="form-control text-black" v-model="createForm.access_type"
+                                                        placeholder="Chose Access Type">
+                                                    <option selected disabled value="">~~ Chose Option ~~</option>
+                                                    <option value="Year">Year</option>
+                                                    <option value="Month">Month</option>
+                                                    <option value="Days">Days</option>
+                                                </select>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-6">
+                                        <Image v-model="createForm.cover" :error="props.errors.cover"
+                                               label="Cover Pic"/>
+                                    </div>
                                     <div class="col-12">
                                         <Textarea v-model="createForm.description" :error="props.errors.description"
                                                   label="Course Short Description- max(300)"/>
@@ -50,33 +70,22 @@
                                                   v-if="props.errors.category_id">{{ props.errors.category_id }}</span>
                                         </div>
                                     </div>
-                                    <!--                        <div class="col-4">
-                                                                <label>Active From: </label>
-                                                                <datepicker v-model="createForm.active_on" class="form-control" placeholder="Choose a date" />
-                                                                <span class="error text-danger" v-if="props.errors.active_on">{{ props.errors.active_on }}</span>
-                                                            </div>
-                                                            <div class="col-4">
-                                                                <label>Access Time:</label>
-                                                                <fieldset>
-                                                                    <div class="input-group">
-                                                                        <input type="text" v-model="createForm.access_time" class="form-control" placeholder="Access Limitation Time" aria-label="Amount">
-                                                                        <select class="form-control"  v-model="createForm.access_type" placeholder="Chose Access Type">
-                                                                            <option selected value="">~~ Chose Option ~~</option>
-                                                                            <option value="Year">Year</option>
-                                                                            <option value="Month">Month</option>
-                                                                            <option value="Days">Days</option>
-                                                                        </select>
+                                    <!--                                    <div class="col-4">
+                                                                            <label>Active From: </label>
+                                                                            <datepicker v-model="createForm.active_on" class="form-control"
+                                                                                        placeholder="Choose a date"/>
+                                                                            <span class="error text-danger"
+                                                                                  v-if="props.errors.active_on">{{ props.errors.active_on }}</span>
+                                                                        </div>-->
 
-                                                                    </div>
-                                                                </fieldset>
-                                                            </div>-->
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="mb-1">
-                                            <label class="form-label">Haven with this couse
+                                            <label class="form-label">
+                                                Included this course
                                                 <a href="https://icones.js.org/" target="_blank" title="Get Icon name">
                                                     <vue-feather type="external-link" size="10"/>
                                                 </a>
@@ -109,24 +118,23 @@
                         </div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <Image v-model="createForm.cover" :error="props.errors.cover" label="Cover Pic"/>
+                <!--                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <Text v-model="createForm.video"
+                                                      :error="props.errors.video"
+                                                      label="Course Intro Video-(Youtube Video Id)" placeholder="Course Intro Video Url" />
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <Text v-model="createForm.video"
-                                      :error="props.errors.video"
-                                      label="Course Intro Video-(Youtube Video Id)" placeholder="Course Intro Video Url" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                </div>-->
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
@@ -161,12 +169,13 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-12">
-                                        <label class="form-label">Frequend Ask Questions</label>
+                                        <label class="form-label">Frequently Asked Questions</label>
                                         <div class="d-flex flex-column gap-2">
                                             <div class="border p-1" v-for="(item, index) in createForm.faqs">
                                                 <div class="">
-                                                    <Text class="w-100 mb-0" v-model="createForm.faqs[index].question" :error="props.errors.name"
-                                                          placeholder="Course title" />
+                                                    <Text class="w-100 mb-0" v-model="createForm.faqs[index].question"
+                                                          :error="props.errors.name"
+                                                          placeholder="Course title"/>
                                                     <div>
                                                         <button type="button" class="btn btn-sm btn-primary"
                                                                 v-if="index === 0" @click="addFaq">
@@ -227,7 +236,7 @@ let createForm = useForm({
     active_on: null,
     files: null,
     access_time: null,
-    access_type: null,
+    access_type: '',
     instractors: [],
     inclues: [
         {
@@ -235,11 +244,11 @@ let createForm = useForm({
             title: null
         },
     ],
-    features:[{title:null}],
-    faqs:[
+    features: [{title: null}],
+    faqs: [
         {
-            question:null,
-            answer:null
+            question: null,
+            answer: null
         }
     ]
 })
@@ -273,7 +282,7 @@ const addFaq = () => {
 const addFeature = () => {
     createForm.features.push(
         {
-            title:null
+            title: null
         }
     )
 }

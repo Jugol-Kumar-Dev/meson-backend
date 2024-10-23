@@ -13,7 +13,7 @@
             <div class="content-header-right text-md-end col-md-3 col-12 d-md-block d-none">
                 <div class="mb-1 breadcrumb-right">
                     <button class="dt-button add-new btn btn-primary" tabindex="0" type="button" data-bs-toggle="modal"
-                            data-bs-target="#createNewCategory"><span>Add New Category</span></button>
+                            data-bs-target="#createNewCategory"><span>Add New Review</span></button>
                 </div>
             </div>
         </div>
@@ -72,7 +72,8 @@
             <form @submit.prevent="createNewCategory">
                 <div class="modal-body">
                     <Text v-model="createForm.name" label="Student Name" placeholder="Student Name"/>
-                    <textarea class="form-control" v-model="createForm.review" label="Review" placeholder="Review content..."/>
+                    <textarea class="form-control" v-model="createForm.review" label="Review"
+                              placeholder="Review content..."/>
                 </div>
                 <div class="modal-footer">
                     <button :disabled="createForm.processing" type="submit"
@@ -106,7 +107,6 @@
     </Layout>
 
 
-
 </template>
 
 <script setup>
@@ -122,104 +122,104 @@ import Swal from 'sweetalert2'
 import {router, useForm} from "@inertiajs/vue3";
 import Layout from "@/Shared/Layout.vue";
 
-    let props = defineProps({
-        reviews: Object,
-        filters: Object,
-        url: String,
-        errors:Object
-    });
+let props = defineProps({
+    reviews: Object,
+    filters: Object,
+    url: String,
+    errors: Object
+});
 
 
-    let deleteItemModal = (id) => {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                router.delete(props.url +"/"+id, {
-                    preserveState: true, replace: true, onSuccess: page => {
-                        Swal.fire(
-                            'Deleted!',
-                            'Your file has been deleted.',
-                            'success'
-                        )
-                    },
-                    onError: errors => {
-                        Swal.fire(
-                            'Oops...',
-                            'Something went wrong!',
-                            'error'
-                        )
-                    }
-                })
-            }
-        })
-    };
-    let createForm = useForm({
-        name: '',
-        review:'',
-    });
-
-    let updateForm = useForm({
-        name: '',
-        photo: null,
+let deleteItemModal = (id) => {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            router.delete(props.url + "/" + id, {
+                preserveState: true, replace: true, onSuccess: page => {
+                    Swal.fire(
+                        'Deleted!',
+                        'Your file has been deleted.',
+                        'success'
+                    )
+                },
+                onError: errors => {
+                    Swal.fire(
+                        'Oops...',
+                        'Something went wrong!',
+                        'error'
+                    )
+                }
+            })
+        }
     })
+};
+let createForm = useForm({
+    name: '',
+    review: '',
+});
 
-    let createNewCategory = () => {
-        createForm.post(props.url, {
-            onSuccess: () => {
-                document.getElementById('createNewCategory').$vb.modal.hide()
-                createForm.reset()
-            }
-        });
-    }
+let updateForm = useForm({
+    name: '',
+    photo: null,
+})
 
-    let editData = ref({});
+let createNewCategory = () => {
+    createForm.post(props.url, {
+        onSuccess: () => {
+            document.getElementById('createNewCategory').$vb.modal.hide()
+            createForm.reset()
+        }
+    });
+}
 
-    let editCategory = (url) => {
-        axios.get(url).then(res => {
-            editData.value = res.data
-            updateForm.name = res.data.name
-            updateForm.photo = res.data.photo
-            document.getElementById('updateCategory').$vb.modal.show()
-            console.log(res.data)
-        }).catch(err => {
-            console.log(err.data)
-        })
-    }
+let editData = ref({});
 
-    let updateNewCategory = (id) =>{
-        console.log(updateForm);
-        updateForm.post('/update-cat/'+id, {
-            onSuccess: ()=>{
-                document.getElementById('updateCategory').$vb.modal.hide()
-                updateForm.reset()
-            }
-        })
-    }
+let editCategory = (url) => {
+    axios.get(url).then(res => {
+        editData.value = res.data
+        updateForm.name = res.data.name
+        updateForm.photo = res.data.photo
+        document.getElementById('updateCategory').$vb.modal.show()
+        console.log(res.data)
+    }).catch(err => {
+        console.log(err.data)
+    })
+}
 
-
-    let showData = ref([])
-    let showItem = (slug) => {
-        axios.get('reviews/' + slug).then(res => {
-            showData.value = res.data;
-            document.getElementById('showItem').$vb.modal.show()
-        }).catch(err => {
-            console.log(err)
-        })
-    }
+let updateNewCategory = (id) => {
+    console.log(updateForm);
+    updateForm.post('/update-cat/' + id, {
+        onSuccess: () => {
+            document.getElementById('updateCategory').$vb.modal.hide()
+            updateForm.reset()
+        }
+    })
+}
 
 
-    let search = ref(props.filters.search);
-    let perPage = ref(props.filters.perPage);
+let showData = ref([])
+let showItem = (slug) => {
+    axios.get('reviews/' + slug).then(res => {
+        showData.value = res.data;
+        document.getElementById('showItem').$vb.modal.show()
+    }).catch(err => {
+        console.log(err)
+    })
+}
 
-    watch([search, perPage], debounce(function ([val, val2]) {
-        router.get(props.url, {search: val, perPage: val2}, {preserveState: true, replace: true});
-    }, 300));
+
+let search = ref(props.filters.search);
+let perPage = ref(props.filters.perPage);
+
+watch([search, perPage], debounce(function ([val, val2]) {
+    router.get(props.url, {search: val, perPage: val2}, {preserveState: true, replace: true});
+}, 300));
 
 </script>

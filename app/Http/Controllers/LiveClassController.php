@@ -97,10 +97,11 @@ class LiveClassController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Zoom  $zoom
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($meetingId)
     {
-        //
+        LiveClass::query()->findOrFail($meetingId)->delete();
+        return back();
     }
 }
